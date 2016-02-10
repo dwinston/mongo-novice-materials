@@ -2,3 +2,6 @@ CommonMark
 pandocfilters
 PyYAML
 update-copyright
+mongomock
+ipython[notebook]
+pymongo
