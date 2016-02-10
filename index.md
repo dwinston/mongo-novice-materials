@@ -2,7 +2,36 @@
 layout: lesson
 title: Using MongoDB
 ---
-Introduction goes here.
+
+This lesson introduces MongoDB, a document-oriented database that departs from
+the relational nature of SQL. Because SQL is so well-established and prevalent
+as a database technology, the terms "relational database" and "SQL" are often
+synonymous. Furthermore, the term "NoSQL" has come to encompass a whole class
+of database technologies that are non-relational in nature. There are other
+"NoSQL" technologies such as key-value stores and column stores that differ
+from MongoDB's document/collection approach, but we will only cover MongoDB
+today.
+
+MongoDB trades off the strictness of SQL for a degree of simplicity and
+flexibility often desirable for scientists who are often not certain about the
+best schema design for new/changing data sets. Whereas SQL lends itself well to
+enforcing a schema and thus ensuring data validation at the database level, a
+system like MongoDB does not require setting/migrating schemas to get started
+with data management. However, this means that application-level data
+validation (e.g. before adding to the database) is particularly
+important. MongoDB can pick up on implicit schema in your data through the
+creation of indexes, which will speed up queries significantly for large data
+sets.
+
+This lesson was originally developed at the
+[Lawrence Berkeley National Laboratory](http://lbl.gov), where many scientists
+use MongoDB servers hosted by [NERSC](http://nersc.gov) to
+[manage workflows](https://pythonhosted.org/FireWorks/) and
+[process data](https://pythonhosted.org/pymatgen-db/) on supercomputing
+clusters. The example data for this lesson is from the
+[Materials Project](https://materialsproject.org), which hosts computed
+information for tens of thousands of known and predicted inorganic crystalline
+compounds.
 
 > ## Prerequisites {.prereq}
 >
