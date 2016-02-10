@@ -1,6 +1,6 @@
 # mongodb-novice-materials
 
-Introduction to MongoDB for non-programmers using materials data from the [Materials Project](Materials Project). Uses a Python interface.
+Introduction to MongoDB for non-programmers using materials data from the [Materials Project](https://materialsproject.org). Uses a Python interface.
 
 > Please see [https://github.com/swcarpentry/lesson-example][swc-lesson-example]
 > for instructions on formatting, building, and submitting lessons,
