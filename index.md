@@ -35,11 +35,23 @@ compounds.
 
 > ## Prerequisites {.prereq}
 >
-> What learners need to know before tackling this lesson.
+> There are no strict prerequisites. The following would be helpful:
+>
+> * Familiarity with the command line, for running a mongo server locally and importing data.
+> * Familiarity with programming in Python, for learning commands using the `mongomock` (if no server is available) or `pymongo` packages.
 
 > ## Getting ready {.getready}
 >
-> You need to download some files to follow this lesson:
+> You need to download a data file to follow this lesson:
+>
+> 1. Make a new folder in your Desktop called `mongo-novice-materials`.
+> 2. Download [mongo-novice-materials.json.zip](./data/mongo-novice-materials.json.zip) and move the file to this folder.
+> 3. If it's not unzipped yet, double-click on it to unzip it. You should end up with a new file called `mongo-novice-materials.json`.
+> 4. You can access this folder from the Unix shell with:
+>
+> ~~~ {.input}
+> $ cd && cd Desktop/mongo-novice-materials/
+> ~~~
 
 ## Topics
 
