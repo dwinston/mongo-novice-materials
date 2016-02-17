@@ -34,36 +34,134 @@
 </div>
 <div class="panel-body">
 <ul>
+<li>Introduce the JSON format</li>
 <li>Review Python data types and relate to the JSON format</li>
 <li>Insert a document, understand the purpose of it’s <code>_id</code></li>
+<li>Introduce MongoDB’s “Binary JSON” (BSON) format</li>
 </ul>
 </div>
 </section>
-<p>Paragraphs of text — possibly including <a href="reference.html#definitions">definitions</a> — mixed with:</p>
-<pre class="sourceCode python"><code class="sourceCode python">some code:
-    to be displayed</code></pre>
-<p>and:</p>
-<pre class="output"><code>output
-from
-program</code></pre>
-<p>and:</p>
-<pre class="error"><code>error reports from programs (if any)</code></pre>
-<p>and possibly including some of these:</p>
 <aside class="callout panel panel-info">
 <div class="panel-heading">
-<h2 id="callout-box"><span class="glyphicon glyphicon-pushpin"></span>Callout Box</h2>
+<h2 id="proper-attribution"><span class="glyphicon glyphicon-pushpin"></span>Proper attribution</h2>
 </div>
 <div class="panel-body">
-<p>An aside of some kind.</p>
+<p>The intro to JSON here, including the railroad diagrams, were taken from <a href="http://json.org">json.org</a>.</p>
 </div>
 </aside>
-<p>and one or more of these at the end:</p>
+<p><a href="reference.html#json">JSON</a>, i.e. JavaScript Object Notation, is a lightweight data-interchange format built on two universal data structures:</p>
+<ul>
+<li>a mapping of names to values. In various languages, this is realized as an object, record, struct, dictionary, hash table, keyed list, or associative array.</li>
+<li>an ordered list of values. In most languages, this is realized as an array, vector, list, or sequence.</li>
+</ul>
+<p>In JSON, they take on these forms:</p>
+<ul>
+<li>An <em>object</em> is an unordered set of name/value pairs.</li>
+</ul>
+<div class="figure">
+<img src="./fig/json-object.gif" />
+
+</div>
+<ul>
+<li>An <em>array</em> is an ordered collection of values.</li>
+</ul>
+<div class="figure">
+<img src="./fig/json-array.gif" />
+
+</div>
+<ul>
+<li>A <em>value</em> can be a <em>string</em> in double quotes, or a <em>number</em>, or <strong>true</strong> or <strong>false</strong> or <strong>null</strong>, or an <em>object</em> or an <em>array</em>. These structures can be nested.</li>
+</ul>
+<div class="figure">
+<img src="./fig/json-value.gif" />
+
+</div>
+<ul>
+<li>A <em>string</em> is a sequence of zero or more Unicode characters, wrapped in double quotes, using backslash escapes. A character is represented as a single character string. A string is very much like a C or Java string.</li>
+</ul>
+<div class="figure">
+<img src="./fig/json-string.gif" />
+
+</div>
+<ul>
+<li>A number is very much like a C or Java number, except that the octal and hexadecimal formats are not used. Engineering notation is supported.</li>
+</ul>
+<div class="figure">
+<img src="./fig/json-number.gif" />
+
+</div>
+<p>In Python, built-in data types correspond to those in JSON:</p>
+<ul>
+<li><code>list</code> → <em>array</em></li>
+<li><code>dict</code> → <em>object</em></li>
+<li><code>str</code> → <em>string</em></li>
+<li><code>int</code>/<code>float</code> → <em>number</em></li>
+<li><code>True</code> → <em>true</em></li>
+<li><code>False</code> → <em>false</em></li>
+<li><code>None</code> → <em>null</em></li>
+</ul>
+<p>Now, let’s explore the mechanics of inserting some (fake) data into our collection. In the process, we’ll see how MongoDB extends JSON to allow representation of data types that are not part of the JSON specification.</p>
+<!-- a subset of https://materialsproject.org/materials/mp-2340/ -->
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">from</span> datetime <span class="ch">import</span> datetime
+material = {<span class="st">&quot;fake&quot;</span>: <span class="ot">True</span>,
+            <span class="co">&quot;elements&quot;</span>: [<span class="st">&quot;Na&quot;</span>, <span class="st">&quot;O&quot;</span>],
+            <span class="co">&quot;band_gap&quot;</span>: <span class="fl">1.736</span>,
+            <span class="co">&quot;last_updated&quot;</span>: datetime.utcnow(),
+            <span class="co">&quot;spacegroup&quot;</span>: {<span class="st">&quot;crystal_system&quot;</span>: <span class="st">&quot;hexagonal&quot;</span>, <span class="st">&quot;number&quot;</span>: <span class="dv">189</span>}}
+result = db.materials.insert_one(material)</code></pre>
+<p>We first create a dictionary to correspond to a JSON object that we will insert as a document into our database collection. Note that we have created a timestamp. Note also that we know nothing about the formatting of other documents in the collection. Do the other documents have a “fake” key? We don’t <em>need</em> to care.</p>
+<p>Let’s inspect the <code>result</code> to get the unique id of the inserted document:</p>
+<pre class="sourceCode python"><code class="sourceCode python">result.inserted_id</code></pre>
+<pre class="output"><code>ObjectId(&#39;56c4c097a628958daa528c2f&#39;)</code></pre>
+<p>What’s interesting is that the id is an object, not simply a JSON string. You can, for instance, ask when it was generated (down to the second):</p>
+<pre class="sourceCode python"><code class="sourceCode python">result.inserted_id.generation_time</code></pre>
+<pre class="output"><code>datetime.datetime(2016, 2, 17, 18, 48, 55, tzinfo=&lt;bson.tz_util.FixedOffset object at 0x10f02c110&gt;)</code></pre>
+<p>What is going on here? Well, MongoDB uses “Binary JSON” (aka <a href="http://bsonspec.org/">BSON</a>), a binary-encoded serialization of JSON-like documents. This allows it to extend the JSON spec to support a richer set of data types. At the same time, all MongoDB documents are just JSON when in transit. We can use the <code>bson</code> package (included when you install <code>pymongo</code>) to see what’s going on under the hood:</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">from</span> bson <span class="ch">import</span> json_util
+<span class="dt">print</span>(json_util.dumps(db.materials.find_one(result.inserted_id), indent=<span class="dv">2</span>))</code></pre>
+<pre class="output"><code>{
+  &quot;elements&quot;: [
+    &quot;Na&quot;, 
+    &quot;O&quot;
+  ], 
+  &quot;band_gap&quot;: 1.736, 
+  &quot;fake&quot;: true, 
+  &quot;spacegroup&quot;: {
+    &quot;crystal_system&quot;: &quot;hexagonal&quot;, 
+    &quot;number&quot;: 189
+  }, 
+  &quot;last_updated&quot;: {
+    &quot;$date&quot;: 1455734933569
+  }, 
+  &quot;_id&quot;: {
+    &quot;$oid&quot;: &quot;56c4c097a628958daa528c2f&quot;
+  }
+}</code></pre>
+<p>MongoDB uses a convention of “$”-preceded key names to indicate that something special is going on. We’ll use the dollar sign a lot when finding things because, as we’ll see, queries are specified using JSON objects.</p>
+<p>It’s worth noting that the <code>_id</code> field is <em>very</em>, <em>very</em> likely to be unique. It might be (much?) more likely that we’ll all be struck by a meteor this very second. This makes it reasonable to create documents in parallel without worrying about race conditions for increment-by-one id strategies.</p>
+<p>Before we move on, let’s delete any/all fake documents in our collection (we’ll go over deletion again later):</p>
+<pre class="sourceCode python"><code class="sourceCode python">result = db.materials.delete_many({<span class="st">&quot;fake&quot;</span>: <span class="ot">True</span>})
+result.deleted_count</code></pre>
+<pre class="output"><code>1</code></pre>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
-<h2 id="challenge-title"><span class="glyphicon glyphicon-pencil"></span>Challenge Title</h2>
+<h2 id="about-those-_ids"><span class="glyphicon glyphicon-pencil"></span>About those <code>_id</code>s</h2>
 </div>
 <div class="panel-body">
-<p>Description of a single challenge, separated from the title by a blank line. There may be several challenges; they should all come at the end of the file, and each should have a short, meaningful title.</p>
+<p>What are some properties of a generated MongoDB document <code>_id</code> (choose zero or more of the following)?</p>
+<ol style="list-style-type: decimal">
+<li>It can double as a “created-at” timestamp</li>
+<li>It is guaranteed to be unique in the scope of the collection</li>
+<li>It is valid JSON</li>
+</ol>
+</div>
+</section>
+<section class="challenge panel panel-success">
+<div class="panel-heading">
+<h2 id="multiple-insertion"><span class="glyphicon glyphicon-pencil"></span>Multiple insertion</h2>
+</div>
+<div class="panel-body">
+<p>What happens when you try to re-create and insert the example (fake) <code>material</code> document again?</p>
 </div>
 </section>
         </div>
