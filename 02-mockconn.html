@@ -39,31 +39,63 @@
 </ul>
 </div>
 </section>
-<p>Paragraphs of text — possibly including <a href="reference.html#definitions">definitions</a> — mixed with:</p>
-<pre class="sourceCode python"><code class="sourceCode python">some code:
-    to be displayed</code></pre>
-<p>and:</p>
-<pre class="output"><code>output
-from
-program</code></pre>
-<p>and:</p>
-<pre class="error"><code>error reports from programs (if any)</code></pre>
-<p>and possibly including some of these:</p>
 <aside class="callout panel panel-info">
 <div class="panel-heading">
-<h2 id="callout-box"><span class="glyphicon glyphicon-pushpin"></span>Callout Box</h2>
+<h2 id="playing-pretend"><span class="glyphicon glyphicon-pushpin"></span>Playing Pretend</h2>
 </div>
 <div class="panel-body">
-<p>An aside of some kind.</p>
+<p>To accommodate folks who cannot get a real database server running locally on their system, and also to demonstrate the utility of <a href="reference.html#mock-object">“mocking”</a> for testing real access patterns without an external dependency, we will use the <code>mongomock</code> Python library to walk through MongoDB ideas for the first few topics. If you have a Mongo server running, feel free to use <code>pymongo.MongoClient</code> instead.</p>
 </div>
 </aside>
-<p>and one or more of these at the end:</p>
+<p>First, let’s connect to the (mock) server an get a handle for our client.</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">from</span> mongomock <span class="ch">import</span> MongoClient
+<span class="co">#from pymongo import MongoClient</span>
+
+client = MongoClient()</code></pre>
+<p>A MongoDB instance can host multiple databases, which are created dynamically. Here, we will supply a database name as an attribute of the client object, which will prompt MongoDB to create the database with that name if it doesn’t exists.</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Refer to the Software Carpentry (&quot;swc&quot;) database</span>
+db = client.swc
+<span class="dt">print</span>(db)</code></pre>
+<pre class="output"><code>Database(mongomock.MongoClient(&#39;localhost&#39;, 27017), &#39;swc&#39;)</code></pre>
+<p>In Python, we can <code>print</code> something to look at it’s string representation, which is often designed to be human-readable and can give us an idea of what’s going on. We see here that what we’re calling <code>db</code> is a Database with the name “swc” that we’re accessing through a Mongo client connected to localhost on port 27017.</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="dt">print</span>(db.materials)</code></pre>
+<pre class="output"><code>Collection(Database(mongomock.MongoClient(&#39;localhost&#39;, 27017), &#39;swc&#39;), &#39;materials&#39;)</code></pre>
+<p>A MongoDB database is organized as a set of collections, each of which contains a set of documents. To first order, you can for now think of a collection as corresponding to a table in <a href="reference.html#sql">SQL</a> and a collection document as corresponding to a table row in SQL.</p>
+<p>Just as with databases themselves, database collections are created dynamically in MongoDB. Above, we created a <code>materials</code> collection in our database simply by referring to it by name.</p>
+<p>Now, let’s load data from a file and import it as documents into our collection:</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">import</span> json</code></pre>
+<p>We first import the <code>json</code> module from the Python standard library. <code>JSON</code>, which stands for “Javascript Object Notation”, is a way to express simple data structures that is widely used in web-based applications. We’ll go over the format in the next topic when we construct a document to insert into our collection, but for now let’s focus on importing data that we’re given.</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">with</span> <span class="dt">open</span>(<span class="st">&#39;data/mongo-novice-materials.json&#39;</span>) <span class="ch">as</span> f:
+    db.materials.insert_many(json.load(f))</code></pre>
+<p>We are using a Python context manager to open a file and ensure that it is closed when we are done processing the file contents. In this case, we use the <code>json</code> module to load the file contents as Python-native data structures, which we then hand off to the <code>insert_many</code> method of database collections to insert all of the loaded documents.</p>
+<pre class="sourceCode python"><code class="sourceCode python">db.materials.count()</code></pre>
+<p>To confirm we have the data loaded, we use the <code>count()</code> method of a collection object and see that we have more than zero documents in our <code>materials</code> collection.</p>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
-<h2 id="challenge-title"><span class="glyphicon glyphicon-pencil"></span>Challenge Title</h2>
+<h2 id="loading-json-data"><span class="glyphicon glyphicon-pencil"></span>Loading JSON data</h2>
 </div>
 <div class="panel-body">
-<p>Description of a single challenge, separated from the title by a blank line. There may be several challenges; they should all come at the end of the file, and each should have a short, meaningful title.</p>
+<p>Reload the dataset from the JSON file and assign it to a variable <code>dataset</code> instead of immediately inserting it into the database collection. What is <code>type(dataset)</code>, the type of the dataset? What is the type of <code>dataset[0]</code>, the first (“zeroth”) member of the imported data?</p>
+<ol style="list-style-type: decimal">
+<li><code>collection</code> and <code>document</code></li>
+<li><code>array</code> and <code>object</code></li>
+<li><code>list</code> and <code>dict</code></li>
+<li><code>set</code> and <code>member</code></li>
+</ol>
+</div>
+</section>
+<section class="challenge panel panel-success">
+<div class="panel-heading">
+<h2 id="unknown-collections"><span class="glyphicon glyphicon-pencil"></span>Unknown collections</h2>
+</div>
+<div class="panel-body">
+<p>What happens when you run the following:</p>
+<pre class="sourceCode python"><code class="sourceCode python">db.publications.count()</code></pre>
+<ol style="list-style-type: decimal">
+<li><code>0</code></li>
+<li><code>Error: no such collection &quot;publications&quot;</code></li>
+<li><code>Error: no method &quot;count&quot; on Undefined</code></li>
+</ol>
 </div>
 </section>
         </div>

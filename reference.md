@@ -7,8 +7,8 @@ subtitle: Reference
 
 ## Glossary
 
-key word 1
-:   Definition of first term
+mock object
+:   In object-oriented programming, mock objects are simulated objects that mimic the behavior of real objects in controlled ways.
 
-key word 2
-:   Definition of second term
+SQL
+:   Structured Query Language, a widely-used, declarative language for relational databases.
