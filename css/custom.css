@@ -1,0 +1,5 @@
+pre.Command{ /*Added to imitate windows command prompt -Jaymo Kang*/
+    font-family: Consolas, monaco, monospace;
+    color: rgb(226,226,226);
+    background-color: rgb(0,0,0);
+}
