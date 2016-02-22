@@ -157,11 +157,27 @@ print(json_util.dumps(db.materials.find_one(result.inserted_id), indent=2))
 }
 ~~~
 
-MongoDB uses a convention of "$"-preceded key names to indicate that something special is going on. We'll use the dollar sign a lot when finding things because, as we'll see, queries are specified using JSON objects.
+In stored documents, MongoDB uses a convention of "\$"-preceded key names to
+indicate serialized data types. We'll see the dollar sign again when finding
+things because queries are specified using JSON objects, and MongoDB uses
+"\$"-preceded key names in that context as operators for declaring constraints
+on values.
 
-It's worth noting that the `_id` field is *very*, *very* likely to be unique. It might be (much?) more likely that we'll all be struck by a meteor this very second. This makes it reasonable to create documents in parallel without worrying about race conditions for increment-by-one id strategies.
+It's worth noting that the `_id` field is *very*, *very* likely to be
+unique. It is a 12-byte BSON type constructed using:
 
-Before we move on, let's delete any/all fake documents in our collection (we'll go over deletion again later):
+* a 4-byte value representing the seconds since the Unix epoch,
+* a 3-byte machine identifier,
+* a 2-byte process id, and
+* a 3-byte counter, starting with a random value.
+
+This makes it reasonable to create documents in parallel without worrying about
+race conditions for increment-by-one id strategies. Furthermore, sorting on an
+`_id` field that stores ObjectId values is roughly equivalent to sorting by
+creation time (it's not strict within a single second).
+
+Before we move on, let's delete any/all fake documents in our collection (we'll
+go over deletion again later):
 
 ~~~ {.python}
 result = db.materials.delete_many({"fake": True})
