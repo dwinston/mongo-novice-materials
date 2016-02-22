@@ -74,16 +74,16 @@ Let's inspect the `result` to get the unique id of the inserted document:
 result.inserted_id
 ~~~
 ~~~ {.output}
-ObjectId('56c4c097a628958daa528c2f')
+ObjectId('56cb4595a62895f91556937e')
 ~~~
 
 What's interesting is that the id is an object, not simply a JSON string. You can, for instance, ask when it was generated (down to the second):
 
 ~~~ {.python}
-result.inserted_id.generation_time
+print(result.inserted_id.generation_time)
 ~~~
 ~~~ {.output}
-datetime.datetime(2016, 2, 17, 18, 48, 55, tzinfo=<bson.tz_util.FixedOffset object at 0x10f02c110>)
+2016-02-22 17:29:57+00:00
 ~~~
 
 What is going on here? Well, MongoDB uses "Binary JSON" (aka [BSON](http://bsonspec.org/)), a binary-encoded serialization of JSON-like documents. This allows it to extend the JSON spec to support a richer set of data types. At the same time, all MongoDB documents are just JSON when in transit. We can use the `bson` package (included when you install `pymongo`) to see what's going on under the hood:
@@ -95,18 +95,18 @@ print(json_util.dumps(db.materials.find_one(result.inserted_id), indent=2))
 ~~~ {.output}
 {
   "elements": [
-    "Na", 
+    "Na",
     "O"
-  ], 
-  "band_gap": 1.736, 
-  "fake": true, 
+  ],
+  "band_gap": 1.736,
+  "fake": true,
   "spacegroup": {
-    "crystal_system": "hexagonal", 
+    "crystal_system": "hexagonal",
     "number": 189
-  }, 
+  },
   "last_updated": {
     "$date": 1455734933569
-  }, 
+  },
   "_id": {
     "$oid": "56c4c097a628958daa528c2f"
   }
@@ -138,4 +138,3 @@ result.deleted_count
 > ## Multiple insertion {.challenge}
 >
 > What happens when you try to re-create and insert the example (fake) `material` document again?
-

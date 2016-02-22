@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
     <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
     <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <link rel="stylesheet" type="text/css" href="css/custom.css" />
     <link rel="alternate" type="application/rss+xml" title="Software Carpentry Blog" href="http://software-carpentry.org/feed.xml"/>
     <meta charset="UTF-8" />
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -112,27 +113,27 @@ result = db.materials.insert_one(material)</code></pre>
 <p>We first create a dictionary to correspond to a JSON object that we will insert as a document into our database collection. Note that we have created a timestamp. Note also that we know nothing about the formatting of other documents in the collection. Do the other documents have a “fake” key? We don’t <em>need</em> to care.</p>
 <p>Let’s inspect the <code>result</code> to get the unique id of the inserted document:</p>
 <pre class="sourceCode python"><code class="sourceCode python">result.inserted_id</code></pre>
-<pre class="output"><code>ObjectId(&#39;56c4c097a628958daa528c2f&#39;)</code></pre>
+<pre class="output"><code>ObjectId(&#39;56cb4595a62895f91556937e&#39;)</code></pre>
 <p>What’s interesting is that the id is an object, not simply a JSON string. You can, for instance, ask when it was generated (down to the second):</p>
-<pre class="sourceCode python"><code class="sourceCode python">result.inserted_id.generation_time</code></pre>
-<pre class="output"><code>datetime.datetime(2016, 2, 17, 18, 48, 55, tzinfo=&lt;bson.tz_util.FixedOffset object at 0x10f02c110&gt;)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="dt">print</span>(result.inserted_id.generation_time)</code></pre>
+<pre class="output"><code>2016-02-22 17:29:57+00:00</code></pre>
 <p>What is going on here? Well, MongoDB uses “Binary JSON” (aka <a href="http://bsonspec.org/">BSON</a>), a binary-encoded serialization of JSON-like documents. This allows it to extend the JSON spec to support a richer set of data types. At the same time, all MongoDB documents are just JSON when in transit. We can use the <code>bson</code> package (included when you install <code>pymongo</code>) to see what’s going on under the hood:</p>
 <pre class="sourceCode python"><code class="sourceCode python"><span class="ch">from</span> bson <span class="ch">import</span> json_util
 <span class="dt">print</span>(json_util.dumps(db.materials.find_one(result.inserted_id), indent=<span class="dv">2</span>))</code></pre>
 <pre class="output"><code>{
   &quot;elements&quot;: [
-    &quot;Na&quot;, 
+    &quot;Na&quot;,
     &quot;O&quot;
-  ], 
-  &quot;band_gap&quot;: 1.736, 
-  &quot;fake&quot;: true, 
+  ],
+  &quot;band_gap&quot;: 1.736,
+  &quot;fake&quot;: true,
   &quot;spacegroup&quot;: {
-    &quot;crystal_system&quot;: &quot;hexagonal&quot;, 
+    &quot;crystal_system&quot;: &quot;hexagonal&quot;,
     &quot;number&quot;: 189
-  }, 
+  },
   &quot;last_updated&quot;: {
     &quot;$date&quot;: 1455734933569
-  }, 
+  },
   &quot;_id&quot;: {
     &quot;$oid&quot;: &quot;56c4c097a628958daa528c2f&quot;
   }
