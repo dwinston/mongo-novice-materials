@@ -57,40 +57,57 @@
 </ul>
 <p>In JSON, they take on these forms:</p>
 <ul>
-<li>An <em>object</em> is an unordered set of name/value pairs.</li>
-</ul>
+<li><p>An <em>object</em> is an unordered set of name/value pairs.</p>
+<pre class="sourceCode python"><code class="sourceCode python">{<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-568345&#39;</span>, <span class="st">&#39;nelements&#39;</span>: <span class="dv">1</span>, <span class="st">&#39;pretty_formula&#39;</span>: <span class="st">&#39;Fe&#39;</span>}</code></pre>
 <div class="figure">
 <img src="./fig/json-object.gif" />
 
-</div>
-<ul>
-<li>An <em>array</em> is an ordered collection of values.</li>
-</ul>
+</div></li>
+<li><p>An <em>array</em> is an ordered collection of values.</p>
+<pre class="sourceCode python"><code class="sourceCode python">[{<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-568345&#39;</span>, <span class="st">&#39;nelements&#39;</span>: <span class="dv">1</span>, <span class="st">&#39;pretty_formula&#39;</span>: <span class="st">&#39;Fe&#39;</span>},
+ {<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-12671&#39;</span>, <span class="st">&#39;nelements&#39;</span>: <span class="dv">3</span>, <span class="st">&#39;pretty_formula&#39;</span>: <span class="st">&#39;Er2SO2&#39;</span>},
+ {<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-1703&#39;</span>, <span class="st">&#39;nelements&#39;</span>: <span class="dv">2</span>, <span class="st">&#39;pretty_formula&#39;</span>: <span class="st">&#39;YbZn&#39;</span>}]</code></pre>
 <div class="figure">
 <img src="./fig/json-array.gif" />
 
-</div>
-<ul>
-<li>A <em>value</em> can be a <em>string</em> in double quotes, or a <em>number</em>, or <strong>true</strong> or <strong>false</strong> or <strong>null</strong>, or an <em>object</em> or an <em>array</em>. These structures can be nested.</li>
-</ul>
+</div></li>
+<li><p>A <em>value</em> can be a <em>string</em> in quotes, or a <em>number</em>, or <strong>true</strong> or <strong>false</strong> or <strong>null</strong>, or an <em>object</em> or an <em>array</em>. These structures can be nested.</p>
+<pre class="sourceCode python"><code class="sourceCode python">{<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-2340&#39;</span>,
+ <span class="co">&#39;chemsys&#39;</span>: <span class="st">&#39;Na-O&#39;</span>,
+ <span class="co">&#39;has_bandstructure&#39;</span>: <span class="ot">True</span>,
+ <span class="co">&#39;elasticity&#39;</span>: <span class="ot">None</span>,
+ <span class="co">&#39;elements&#39;</span>: [<span class="st">&#39;Na&#39;</span>, <span class="st">&#39;O&#39;</span>],
+ <span class="co">&#39;nelements&#39;</span>: <span class="dv">2</span>,
+ <span class="co">&#39;pretty_formula&#39;</span>: <span class="st">&#39;Na2O2&#39;</span>,
+ <span class="co">&#39;spacegroup&#39;</span>: {
+   <span class="st">&#39;crystal_system&#39;</span>: <span class="st">&#39;hexagonal&#39;</span>,
+   <span class="co">&#39;hall&#39;</span>: <span class="st">&#39;P -6 -2&#39;</span>,
+   <span class="co">&#39;number&#39;</span>: <span class="dv">189</span>,
+   <span class="co">&#39;point_group&#39;</span>: <span class="st">&#39;-6m2&#39;</span>,
+   <span class="co">&#39;source&#39;</span>: <span class="st">&#39;spglib&#39;</span>,
+   <span class="co">&#39;symbol&#39;</span>: <span class="st">&#39;P-62m&#39;</span>}}</code></pre>
 <div class="figure">
 <img src="./fig/json-value.gif" />
 
-</div>
-<ul>
-<li>A <em>string</em> is a sequence of zero or more Unicode characters, wrapped in double quotes, using backslash escapes. A character is represented as a single character string. A string is very much like a C or Java string.</li>
-</ul>
+</div></li>
+<li><p>A <em>string</em> is a sequence of zero or more Unicode characters, wrapped in double quotes, using backslash escapes. A character is represented as a single character string. A string is very much like a C or Java string.</p>
+<pre class="sourceCode python"><code class="sourceCode python">{<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-2340&#39;</span>,
+ <span class="co">&#39;cif&#39;</span>: <span class="st">&quot;#</span><span class="ch">\\</span><span class="st">#CIF1.1</span><span class="ch">\n</span><span class="st">##########################################################################</span><span class="ch">\n</span><span class="st">#               Crystallographic Information Format file </span><span class="ch">\n</span><span class="st">#               Produced by PyCifRW module</span><span class="ch">\n</span><span class="st"># </span><span class="ch">\n</span><span class="st">#  This is a CIF file.  CIF has been adopted by the International</span><span class="ch">\n</span><span class="st">#  Union of Crystallography as the standard for data archiving and </span><span class="ch">\n</span><span class="st">#  transmission.</span><span class="ch">\n</span><span class="st">#</span><span class="ch">\n</span><span class="st">#  For information on this file format, follow the CIF links at</span><span class="ch">\n</span><span class="st">#  http://www.iucr.org</span><span class="ch">\n</span><span class="st">##########################################################################</span><span class="ch">\n\n</span><span class="st">data_Na2O2</span><span class="ch">\n</span><span class="st">_symmetry_space_group_name_H-M          &#39;P 1&#39;</span><span class="ch">\n</span><span class="st">_cell_length_a                          6.27944383</span><span class="ch">\n</span><span class="st">_cell_length_b                          6.27944383387</span><span class="ch">\n</span><span class="st">_cell_length_c                          4.50693686</span><span class="ch">\n</span><span class="st">_cell_angle_alpha                       90.0</span><span class="ch">\n</span><span class="st">_cell_angle_beta                        90.0</span><span class="ch">\n</span><span class="st">_cell_angle_gamma                       120.000000032</span><span class="ch">\n</span><span class="st">_chemical_name_systematic               &#39;Generated by pymatgen&#39;</span><span class="ch">\n</span><span class="st">_symmetry_Int_Tables_number             1</span><span class="ch">\n</span><span class="st">_chemical_formula_structural            Na2O2</span><span class="ch">\n</span><span class="st">_chemical_formula_sum                   &#39;Na6 O6&#39;</span><span class="ch">\n</span><span class="st">_cell_volume                            153.905615363</span><span class="ch">\n</span><span class="st">_cell_formula_units_Z                   3</span><span class="ch">\n</span><span class="st">loop_</span><span class="ch">\n</span><span class="st">  _symmetry_equiv_pos_site_id</span><span class="ch">\n</span><span class="st">  _symmetry_equiv_pos_as_xyz</span><span class="ch">\n</span><span class="st">   1  &#39;x, y, z&#39;</span><span class="ch">\n</span><span class="st"> </span><span class="ch">\n</span><span class="st">loop_</span><span class="ch">\n</span><span class="st">  _atom_site_type_symbol</span><span class="ch">\n</span><span class="st">  _atom_site_label</span><span class="ch">\n</span><span class="st">  _atom_site_symmetry_multiplicity</span><span class="ch">\n</span><span class="st">  _atom_site_fract_x</span><span class="ch">\n</span><span class="st">  _atom_site_fract_y</span><span class="ch">\n</span><span class="st">  _atom_site_fract_z</span><span class="ch">\n</span><span class="st">  _atom_site_attached_hydrogens</span><span class="ch">\n</span><span class="st">  _atom_site_B_iso_or_equiv</span><span class="ch">\n</span><span class="st">  _atom_site_occupancy</span><span class="ch">\n</span><span class="st">   O  O1  1  0.666667  0.333333  0.327586  0  .  1</span><span class="ch">\n</span><span class="st">   O  O2  1  0.666667  0.333333  0.672414  0  .  1</span><span class="ch">\n</span><span class="st">   O  O3  1  0.333333  0.666667  0.672414  0  .  1</span><span class="ch">\n</span><span class="st">   O  O4  1  0.333333  0.666667  0.327586  0  .  1</span><span class="ch">\n</span><span class="st">   O  O5  1  0.000000  0.000000  0.829456  0  .  1</span><span class="ch">\n</span><span class="st">   O  O6  1  0.000000  0.000000  0.170544  0  .  1</span><span class="ch">\n</span><span class="st">   Na  Na7  1  0.000000  0.699801  0.500000  0  .  1</span><span class="ch">\n</span><span class="st">   Na  Na8  1  0.300199  0.300199  0.500000  0  .  1</span><span class="ch">\n</span><span class="st">   Na  Na9  1  0.699801  0.000000  0.500000  0  .  1</span><span class="ch">\n</span><span class="st">   Na  Na10  1  0.000000  0.365556  0.000000  0  .  1</span><span class="ch">\n</span><span class="st">   Na  Na11  1  0.634444  0.634444  0.000000  0  .  1</span><span class="ch">\n</span><span class="st">   Na  Na12  1  0.365556  0.000000  0.000000  0  .  1</span><span class="ch">\n</span><span class="st"> </span><span class="ch">\n</span><span class="st">&quot;</span>,
+
+<span class="co">&#39;doi_bibtex&#39;</span>: <span class="st">&#39;@misc{Kristin Persson_2014, place={United States}, title={Materials Data on Na2O2 (SG:189) by Materials Project}, url={http://www.osti.gov/dataexplorer/servlets/purl/1182584}, DOI={10.17188/1182584}, abstractNote={Computed materials data using density functional theory calculations. These calculations determine the electronic structure of bulk materials by solving approximations to the Schrodinger equation. For more information, see https://materialsproject.org/docs/calculations}, author={Kristin Persson}, year=</span><span class="ot">{2014}</span><span class="st">, month=</span><span class="ot">{Nov}</span><span class="st">}&#39;</span>}</code></pre>
 <div class="figure">
 <img src="./fig/json-string.gif" />
 
-</div>
-<ul>
-<li>A number is very much like a C or Java number, except that the octal and hexadecimal formats are not used. Engineering notation is supported.</li>
-</ul>
+</div></li>
+<li><p>A number is very much like a C or Java number, except that the octal and hexadecimal formats are not used. Engineering notation is supported. Non-integers are stored according to the IEEE 754 floating-point standard.</p>
+<pre class="sourceCode python"><code class="sourceCode python">-<span class="dv">1</span>
+<span class="fl">1.6e5</span>
+<span class="fl">1.432e-10</span></code></pre>
 <div class="figure">
 <img src="./fig/json-number.gif" />
 
-</div>
+</div></li>
+</ul>
 <p>In Python, built-in data types correspond to those in JSON:</p>
 <ul>
 <li><code>list</code> → <em>array</em></li>
