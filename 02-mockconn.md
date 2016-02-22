@@ -41,11 +41,8 @@ print(db)
 Database(mongomock.MongoClient('localhost', 27017), 'swc')
 ~~~
 
-In Python, we can `print` something to look at it's string representation,
-which is often designed to be human-readable and can give us an idea of what's
-going on. We see here that what we're calling `db` is a Database with the name
-"swc" that we're accessing through a Mongo client connected to localhost on
-port 27017.
+We see here that what we're calling `db` is a Database with the name "swc" that
+we're accessing through a Mongo client connected to localhost on port 27017.
 
 ~~~ {.python}
 print(db.materials)
