@@ -101,7 +101,16 @@ material = {"fake": True,
 result = db.materials.insert_one(material)
 ~~~
 
-We first create a dictionary to correspond to a JSON object that we will insert as a document into our database collection. Note that we have created a timestamp. Note also that we know nothing about the formatting of other documents in the collection. Do the other documents have a "fake" key? We don't *need* to care.
+We first create a dictionary to correspond to a JSON object that we will insert
+as a document into our database collection. Note that we have created a
+timestamp. Note also that we know nothing about the formatting of other
+documents in the collection. Do the other documents have a "fake" key? We don't
+*need* to care. This is because MongoDB allows for flexible schema -- it won't
+complain if some documents contain certain keys and others don't. In fact,
+MongoDB has an `$exists` operator you can use in queries to filter for
+documents that contain / do not contain a given key. When fetching a key's
+value across a set of documents, if certain documents don't contain the key,
+the `null` value (`None` in Python) will be returned for those documents.
 
 Let's inspect the `result` to get the unique id of the inserted document:
 
