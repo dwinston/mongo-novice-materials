@@ -31,7 +31,7 @@
           <h2 class="subtitle">Insert Data</h2>
           <section class="objectives panel panel-warning">
 <div class="panel-heading">
-<h2 id="learning-objectives"><span class="glyphicon glyphicon-certificate"></span>Learning Objectives</h2>
+<h2><span class="glyphicon glyphicon-certificate"></span>Learning Objectives</h2>
 </div>
 <div class="panel-body">
 <ul>
@@ -44,7 +44,7 @@
 </section>
 <aside class="callout panel panel-info">
 <div class="panel-heading">
-<h2 id="proper-attribution"><span class="glyphicon glyphicon-pushpin"></span>Proper attribution</h2>
+<h2><span class="glyphicon glyphicon-pushpin"></span>Proper attribution</h2>
 </div>
 <div class="panel-body">
 <p>The intro to JSON here, including the railroad diagrams, were taken from <a href="http://json.org">json.org</a>.</p>
@@ -61,7 +61,6 @@
 <pre class="sourceCode python"><code class="sourceCode python">{<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-568345&#39;</span>, <span class="st">&#39;nelements&#39;</span>: <span class="dv">1</span>, <span class="st">&#39;pretty_formula&#39;</span>: <span class="st">&#39;Fe&#39;</span>}</code></pre>
 <div class="figure">
 <img src="./fig/json-object.gif" />
-
 </div></li>
 <li><p>An <em>array</em> is an ordered collection of values.</p>
 <pre class="sourceCode python"><code class="sourceCode python">[{<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-568345&#39;</span>, <span class="st">&#39;nelements&#39;</span>: <span class="dv">1</span>, <span class="st">&#39;pretty_formula&#39;</span>: <span class="st">&#39;Fe&#39;</span>},
@@ -69,7 +68,6 @@
  {<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-1703&#39;</span>, <span class="st">&#39;nelements&#39;</span>: <span class="dv">2</span>, <span class="st">&#39;pretty_formula&#39;</span>: <span class="st">&#39;YbZn&#39;</span>}]</code></pre>
 <div class="figure">
 <img src="./fig/json-array.gif" />
-
 </div></li>
 <li><p>A <em>value</em> can be a <em>string</em> in quotes, or a <em>number</em>, or <strong>true</strong> or <strong>false</strong> or <strong>null</strong>, or an <em>object</em> or an <em>array</em>. These structures can be nested.</p>
 <pre class="sourceCode python"><code class="sourceCode python">{<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-2340&#39;</span>,
@@ -88,7 +86,6 @@
    <span class="co">&#39;symbol&#39;</span>: <span class="st">&#39;P-62m&#39;</span>}}</code></pre>
 <div class="figure">
 <img src="./fig/json-value.gif" />
-
 </div></li>
 <li><p>A <em>string</em> is a sequence of zero or more Unicode characters, wrapped in double quotes, using backslash escapes. A character is represented as a single character string. A string is very much like a C or Java string.</p>
 <pre class="sourceCode python"><code class="sourceCode python">{<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-2340&#39;</span>,
@@ -97,7 +94,6 @@
 <span class="co">&#39;doi_bibtex&#39;</span>: <span class="st">&#39;@misc{Kristin Persson_2014, place={United States}, title={Materials Data on Na2O2 (SG:189) by Materials Project}, url={http://www.osti.gov/dataexplorer/servlets/purl/1182584}, DOI={10.17188/1182584}, abstractNote={Computed materials data using density functional theory calculations. These calculations determine the electronic structure of bulk materials by solving approximations to the Schrodinger equation. For more information, see https://materialsproject.org/docs/calculations}, author={Kristin Persson}, year=</span><span class="ot">{2014}</span><span class="st">, month=</span><span class="ot">{Nov}</span><span class="st">}&#39;</span>}</code></pre>
 <div class="figure">
 <img src="./fig/json-string.gif" />
-
 </div></li>
 <li><p>A number is very much like a C or Java number, except that the octal and hexadecimal formats are not used. Engineering notation is supported. Non-integers are stored according to the IEEE 754 floating-point standard.</p>
 <pre class="sourceCode python"><code class="sourceCode python">-<span class="dv">1</span>
@@ -105,7 +101,6 @@
 <span class="fl">1.432e-10</span></code></pre>
 <div class="figure">
 <img src="./fig/json-number.gif" />
-
 </div></li>
 </ul>
 <p>In Python, built-in data types correspond to those in JSON:</p>
@@ -170,7 +165,7 @@ result.deleted_count</code></pre>
 <pre class="output"><code>1</code></pre>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
-<h2 id="about-those-_ids"><span class="glyphicon glyphicon-pencil"></span>About those <code>_id</code>s</h2>
+<h2><span class="glyphicon glyphicon-pencil"></span>About those <code>_id</code>s</h2>
 </div>
 <div class="panel-body">
 <p>What are some properties of a generated MongoDB document <code>_id</code> (choose zero or more of the following)?</p>
@@ -183,7 +178,7 @@ result.deleted_count</code></pre>
 </section>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
-<h2 id="multiple-insertion"><span class="glyphicon glyphicon-pencil"></span>Multiple insertion</h2>
+<h2><span class="glyphicon glyphicon-pencil"></span>Multiple insertion</h2>
 </div>
 <div class="panel-body">
 <p>What happens when you try to re-create and insert the example (fake) <code>material</code> document again?</p>
