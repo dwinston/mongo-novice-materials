@@ -45,7 +45,7 @@ compounds.
 > You need to download a data file to follow this lesson:
 >
 > 1. Make a new folder in your Desktop called `mongo-novice-materials`.
-> 2. Download [mongo-novice-materials.json](./data/mongo-novice-materials.json) (Right-click the link and "Save as...") to this folder. (Slow network connection? Download [mongo-novice-materials.json.zip](./data/mongo-novice-materials.json.zip) to this folder, and double-click on it to unzip it.)
+> 2. Download [mongo-novice-materials.json](./data/mongo-novice-materials.json) (~20 MB) (Right-click the link and "Save as...") to this folder.
 > 3. You can access this folder from the Unix shell with:
 >
 > ~~~ {.input}
