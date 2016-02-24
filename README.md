@@ -13,7 +13,7 @@ The `env/` directory is `.gitignore`d, so you can do the following to get starte
 # assumes you have python and the virtualenv package installed,
 # e.g. via `pip install virtualenv`
 # From this repository's root directory:
-$ virtualenv env
+$ virtualenv -p python3 env
 $ source env/bin/activate
 $ pip install -r requirements.txt
 ```
@@ -35,7 +35,7 @@ to files and rerun the `make preview` command automatically:
 $ while true; do ls -d * | entr -d make preview; done
 ```
 
-In another terminal tab, run `python -m SimpleHTTPServer`, and then open a
+In another terminal tab, run `python -m http.server`, and then open a
 browser to http://localhost:8000. With [LiveReload](http://livereload.com/)
 installed, you can activate it on the folder for this repo, and the browser
 will refresh automatically on file changes.
