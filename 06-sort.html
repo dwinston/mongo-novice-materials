@@ -31,7 +31,7 @@
           <h2 class="subtitle">Sort Results</h2>
           <section class="objectives panel panel-warning">
 <div class="panel-heading">
-<h2><span class="glyphicon glyphicon-certificate"></span>Learning Objectives</h2>
+<h2 id="learning-objectives"><span class="glyphicon glyphicon-certificate"></span>Learning Objectives</h2>
 </div>
 <div class="panel-body">
 <ul>
@@ -40,31 +40,144 @@
 </ul>
 </div>
 </section>
-<p>Paragraphs of text — possibly including <a href="reference.html#definitions">definitions</a> — mixed with:</p>
-<pre class="sourceCode python"><code class="sourceCode python">some code:
-    to be displayed</code></pre>
-<p>and:</p>
-<pre class="output"><code>output
-from
-program</code></pre>
-<p>and:</p>
-<pre class="error"><code>error reports from programs (if any)</code></pre>
-<p>and possibly including some of these:</p>
 <aside class="callout panel panel-info">
 <div class="panel-heading">
-<h2><span class="glyphicon glyphicon-pushpin"></span>Callout Box</h2>
+<h2 id="might-need-a-real-connection"><span class="glyphicon glyphicon-pushpin"></span>Might Need a Real Connection</h2>
 </div>
 <div class="panel-body">
-<p>An aside of some kind.</p>
+<p>This topic may require a real database connection through <code>pymongo</code>.</p>
 </div>
 </aside>
-<p>and one or more of these at the end:</p>
+<p>To specify an order for the result set, you can append the <code>sort()</code> method to a cursor. The argument to sort can be as simple as a key of interest:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">filt <span class="op">=</span> {<span class="st">&quot;elasticity&quot;</span>: {<span class="st">&quot;$ne&quot;</span>: <span class="va">None</span>}}
+proj <span class="op">=</span> {<span class="st">&quot;elasticity.poisson_ratio&quot;</span>: <span class="dv">1</span>}
+proj.update(COMMON_PROJ)
+cursor <span class="op">=</span> db.materials.find(filt, proj).sort(<span class="st">&quot;elasticity.poisson_ratio&quot;</span>)
+<span class="cf">for</span> doc <span class="op">in</span> cursor.limit(<span class="dv">5</span>):
+    pprint(doc)</code></pre></div>
+<pre class="output"><code>{&#39;elasticity&#39;: {&#39;poisson_ratio&#39;: -0.07595596751510682},
+ &#39;material_id&#39;: &#39;mp-771798&#39;,
+ &#39;pretty_formula&#39;: &#39;WO3&#39;,
+ &#39;spacegroup&#39;: {&#39;number&#39;: 204}}
+{&#39;elasticity&#39;: {&#39;poisson_ratio&#39;: 0.042582069532848744},
+ &#39;material_id&#39;: &#39;mp-87&#39;,
+ &#39;pretty_formula&#39;: &#39;Be&#39;,
+ &#39;spacegroup&#39;: {&#39;number&#39;: 194}}
+{&#39;elasticity&#39;: {&#39;poisson_ratio&#39;: 0.05989488523534276},
+ &#39;material_id&#39;: &#39;mp-765892&#39;,
+ &#39;pretty_formula&#39;: &#39;MnCoO4&#39;,
+ &#39;spacegroup&#39;: {&#39;number&#39;: 10}}
+{&#39;elasticity&#39;: {&#39;poisson_ratio&#39;: 0.07135395365323711},
+ &#39;material_id&#39;: &#39;mp-611426&#39;,
+ &#39;pretty_formula&#39;: &#39;C&#39;,
+ &#39;spacegroup&#39;: {&#39;number&#39;: 194}}
+{&#39;elasticity&#39;: {&#39;poisson_ratio&#39;: 0.07391837849830045},
+ &#39;material_id&#39;: &#39;mp-23703&#39;,
+ &#39;pretty_formula&#39;: &#39;LiH&#39;,
+ &#39;spacegroup&#39;: {&#39;number&#39;: 225}}</code></pre>
+<p>If just a key is given, then the sorting is in ascending order. To specify descending-order sorting by a key:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cursor <span class="op">=</span> db.materials.find(filt, proj).sort(<span class="st">&quot;elasticity.poisson_ratio&quot;</span>, <span class="op">-</span><span class="dv">1</span>)
+<span class="cf">for</span> doc <span class="op">in</span> cursor.limit(<span class="dv">5</span>):
+    pprint(doc)</code></pre></div>
+<pre class="output"><code>{&#39;elasticity&#39;: {&#39;poisson_ratio&#39;: 0.46752282089107655},
+ &#39;material_id&#39;: &#39;mp-1387&#39;,
+ &#39;pretty_formula&#39;: &#39;AlV3&#39;,
+ &#39;spacegroup&#39;: {&#39;number&#39;: 223}}
+{&#39;elasticity&#39;: {&#39;poisson_ratio&#39;: 0.46347893160099135},
+ &#39;material_id&#39;: &#39;mp-361&#39;,
+ &#39;pretty_formula&#39;: &#39;Cu2O&#39;,
+ &#39;spacegroup&#39;: {&#39;number&#39;: 224}}
+{&#39;elasticity&#39;: {&#39;poisson_ratio&#39;: 0.4622062265482987},
+ &#39;material_id&#39;: &#39;mp-544&#39;,
+ &#39;pretty_formula&#39;: &#39;Ti3Ir&#39;,
+ &#39;spacegroup&#39;: {&#39;number&#39;: 223}}
+{&#39;elasticity&#39;: {&#39;poisson_ratio&#39;: 0.4461861025154294},
+ &#39;material_id&#39;: &#39;mp-22060&#39;,
+ &#39;pretty_formula&#39;: &#39;Nb3In&#39;,
+ &#39;spacegroup&#39;: {&#39;number&#39;: 223}}
+{&#39;elasticity&#39;: {&#39;poisson_ratio&#39;: 0.4450687838211702},
+ &#39;material_id&#39;: &#39;mp-75&#39;,
+ &#39;pretty_formula&#39;: &#39;Nb&#39;,
+ &#39;spacegroup&#39;: {&#39;number&#39;: 229}}</code></pre>
+<p>What happens if we want secondary sorting? The argument to <code>sort()</code> is then a list of pairs, where each pair specifies a key to sort by and a direction, either ascending (1) or descending (-1) order. The first pair specifies the primary sorting, and the second pair the secondary sorting after the first is done.</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cursor <span class="op">=</span> db.materials.find(filt, proj).sort([
+        (<span class="st">&quot;nelements&quot;</span>, <span class="op">-</span><span class="dv">1</span>),
+        (<span class="st">&quot;elasticity.poisson_ratio&quot;</span>, <span class="op">-</span><span class="dv">1</span>),
+    ])
+<span class="cf">for</span> doc <span class="op">in</span> cursor.limit(<span class="dv">5</span>):
+    pprint(doc)</code></pre></div>
+<pre class="output"><code>{&#39;elasticity&#39;: {&#39;poisson_ratio&#39;: 0.3419981312210572},
+ &#39;material_id&#39;: &#39;mp-556194&#39;,
+ &#39;pretty_formula&#39;: &#39;SrSbSe2F&#39;,
+ &#39;spacegroup&#39;: {&#39;number&#39;: 129}}
+{&#39;elasticity&#39;: {&#39;poisson_ratio&#39;: 0.34027796672596883},
+ &#39;material_id&#39;: &#39;mp-12532&#39;,
+ &#39;pretty_formula&#39;: &#39;KAg2PS4&#39;,
+ &#39;spacegroup&#39;: {&#39;number&#39;: 121}}
+{&#39;elasticity&#39;: {&#39;poisson_ratio&#39;: 0.3349886462699885},
+ &#39;material_id&#39;: &#39;mp-557862&#39;,
+ &#39;pretty_formula&#39;: &#39;BaAg2(HgO2)2&#39;,
+ &#39;spacegroup&#39;: {&#39;number&#39;: 125}}
+{&#39;elasticity&#39;: {&#39;poisson_ratio&#39;: 0.3050725032443602},
+ &#39;material_id&#39;: &#39;mp-11806&#39;,
+ &#39;pretty_formula&#39;: &#39;LiMgSnPt&#39;,
+ &#39;spacegroup&#39;: {&#39;number&#39;: 216}}
+{&#39;elasticity&#39;: {&#39;poisson_ratio&#39;: 0.3042911533524732},
+ &#39;material_id&#39;: &#39;mp-546011&#39;,
+ &#39;pretty_formula&#39;: &#39;YZnAsO&#39;,
+ &#39;spacegroup&#39;: {&#39;number&#39;: 129}}</code></pre>
+<p>You can also pass a keyword argument to <code>find()</code> to specify sorting:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cursor <span class="op">=</span> db.materials.find({
+        <span class="st">&quot;nelements&quot;</span>: {<span class="st">&quot;$lt&quot;</span>: <span class="dv">3</span>}
+    }, {
+        <span class="st">&quot;_id&quot;</span>: <span class="dv">0</span>,
+        <span class="st">&quot;nelements&quot;</span>: <span class="dv">1</span>,
+        <span class="co">&quot;elasticity.K_VRH&quot;</span>: <span class="dv">1</span>,
+        <span class="co">&quot;pretty_formula&quot;</span>: <span class="dv">1</span>,
+        <span class="co">&quot;spacegroup.crystal_system&quot;</span>: <span class="dv">1</span>,
+        <span class="co">&quot;material_id&quot;</span>: <span class="dv">1</span>,
+    }, sort<span class="op">=</span>[
+        (<span class="st">&quot;nelements&quot;</span>, <span class="dv">1</span>),
+        (<span class="st">&quot;elasticity.K_VRH&quot;</span>, <span class="op">-</span><span class="dv">1</span>)
+    ])
+
+<span class="cf">for</span> doc <span class="op">in</span> cursor.limit(<span class="dv">5</span>):
+    pprint(doc)</code></pre></div>
+<pre class="output"><code>{&#39;elasticity&#39;: {&#39;K_VRH&#39;: 435.66148729813784},
+ &#39;material_id&#39;: &#39;mp-611426&#39;,
+ &#39;nelements&#39;: 1,
+ &#39;pretty_formula&#39;: &#39;C&#39;,
+ &#39;spacegroup&#39;: {&#39;crystal_system&#39;: &#39;hexagonal&#39;}}
+{&#39;elasticity&#39;: {&#39;K_VRH&#39;: 401.3286154019227},
+ &#39;material_id&#39;: &#39;mp-49&#39;,
+ &#39;nelements&#39;: 1,
+ &#39;pretty_formula&#39;: &#39;Os&#39;,
+ &#39;spacegroup&#39;: {&#39;crystal_system&#39;: &#39;hexagonal&#39;}}
+{&#39;elasticity&#39;: {&#39;K_VRH&#39;: 365.08592365295135},
+ &#39;material_id&#39;: &#39;mp-8&#39;,
+ &#39;nelements&#39;: 1,
+ &#39;pretty_formula&#39;: &#39;Re&#39;,
+ &#39;spacegroup&#39;: {&#39;crystal_system&#39;: &#39;hexagonal&#39;}}
+{&#39;elasticity&#39;: {&#39;K_VRH&#39;: 346.3227612888041},
+ &#39;material_id&#39;: &#39;mp-101&#39;,
+ &#39;nelements&#39;: 1,
+ &#39;pretty_formula&#39;: &#39;Ir&#39;,
+ &#39;spacegroup&#39;: {&#39;crystal_system&#39;: &#39;cubic&#39;}}
+{&#39;elasticity&#39;: {&#39;K_VRH&#39;: 307.5241654938898},
+ &#39;material_id&#39;: &#39;mp-33&#39;,
+ &#39;nelements&#39;: 1,
+ &#39;pretty_formula&#39;: &#39;Ru&#39;,
+ &#39;spacegroup&#39;: {&#39;crystal_system&#39;: &#39;hexagonal&#39;}}</code></pre>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
-<h2><span class="glyphicon glyphicon-pencil"></span>Challenge Title</h2>
+<h2 id="take-a-number"><span class="glyphicon glyphicon-pencil"></span>Take a Number</h2>
 </div>
 <div class="panel-body">
-<p>Description of a single challenge, separated from the title by a blank line. There may be several challenges; they should all come at the end of the file, and each should have a short, meaningful title.</p>
+<p>Each crystal system maps to a consecutive range of space group numbers. Verify this is the case by inspection through sorting. It may be helpful to use the <code>distinct</code> aggregation method on a collection to get a list of the crystal systems present in the collection:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Filter out compounds with unknown crystal symmetry</span>
+systems <span class="op">=</span> <span class="bu">filter</span>(<span class="va">None</span>, db.materials.distinct(<span class="st">&quot;spacegroup.crystal_system&quot;</span>))
+<span class="cf">for</span> s <span class="op">in</span> systems:
+   <span class="co"># do stuff</span></code></pre></div>
 </div>
 </section>
         </div>
