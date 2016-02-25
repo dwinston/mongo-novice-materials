@@ -6,9 +6,6 @@ minutes: 10
 ---
 > ## Learning Objectives {.objectives}
 >
-> * Connect to a real database using `pymongo`
-> * Import example data from the command line using `mongoimport`
-> * `mongoimport` expects one document per line (**not** a valid JSON file)
 > * Aggregation: Group documents by a field and calculate count
 > * Aggregation: Filter and group documents
 
