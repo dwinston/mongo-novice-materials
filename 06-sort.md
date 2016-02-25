@@ -157,6 +157,9 @@ for doc in cursor.limit(5):
  'spacegroup': {'crystal_system': 'hexagonal'}}
 ~~~
 
+> ## Why a List of Pairs? {.challenge}
+>
+> A query filter is specified as a `dict` of key-value pairs, and so is a query projection. Why can't we just use, for example, `{"key1": 1, "key2": -1}` as an argument to `sort()` to specify a primary ascending sort by "key1" and a secondary descending sort by "key2"?
 
 > ## Take a Number {.challenge}
 >

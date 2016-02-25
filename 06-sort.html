@@ -170,6 +170,14 @@ cursor <span class="op">=</span> db.materials.find(filt, proj).sort(<span class=
  &#39;spacegroup&#39;: {&#39;crystal_system&#39;: &#39;hexagonal&#39;}}</code></pre>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
+<h2 id="why-a-list-of-pairs"><span class="glyphicon glyphicon-pencil"></span>Why a List of Pairs?</h2>
+</div>
+<div class="panel-body">
+<p>A query filter is specified as a <code>dict</code> of key-value pairs, and so is a query projection. Why can’t we just use, for example, <code>{&quot;key1&quot;: 1, &quot;key2&quot;: -1}</code> as an argument to <code>sort()</code> to specify a primary ascending sort by “key1” and a secondary descending sort by “key2”?</p>
+</div>
+</section>
+<section class="challenge panel panel-success">
+<div class="panel-heading">
 <h2 id="take-a-number"><span class="glyphicon glyphicon-pencil"></span>Take a Number</h2>
 </div>
 <div class="panel-body">
