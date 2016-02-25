@@ -11,12 +11,10 @@ minutes: 10
 > * Insert a document, understand the purpose of it's `_id`
 > * Introduce MongoDB's "Binary JSON" (BSON) format
 
-> ## Proper attribution {.callout}
->
-> The intro to JSON here, including the railroad diagrams, were taken from [json.org](http://json.org).
-
 [JSON](reference.html#json), i.e. JavaScript Object Notation, is a lightweight
-data-interchange format built on two universal data structures:
+data-interchange format built on two universal data structures [^1]:
+
+[^1]: The intro to JSON here, including the railroad diagrams, were taken from [json.org](http://json.org).
 
 * a mapping of names to values. In various languages, this is realized as an object, record, struct, dictionary, hash table, keyed list, or associative array.
 * an ordered list of values. In most languages, this is realized as an array, vector, list, or sequence.

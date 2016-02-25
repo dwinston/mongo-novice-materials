@@ -11,7 +11,9 @@ minutes: 10
 > * Query by a field in an embedded document
 > * Query by a field in an array
 
-You can use the `find()` method to issue a query to retrieve data from a collection in MongoDB. All queries in MongoDB have the scope of a single collection.
+You can use the `find()` method to issue a query to retrieve data from a collection in MongoDB. All queries in MongoDB have the scope of a single collection.[^1]
+
+[^1]: Much of the format and language of this lesson from here on out borrow heavily (and occasionally are copied) from mongodb.org's [Getting Started](https://docs.mongodb.org/getting-started/python/) guide, available under the terms of a [Creative Commons License](http://creativecommons.org/licenses/by-nc-sa/3.0/).
 
 Queries can return all documents in a collection or only the documents that match a specified filter or criteria. You can specify the filter or criteria in a document and pass it as a parameter to the `find()` method.
 

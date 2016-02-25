@@ -100,7 +100,9 @@ yielded still have `_id` fields, but they are different than those in the
 `materials` collection. We used the `$sum` accumulator to produce a new
 field. You can find a pipeline stage reference [here](https://docs.mongodb.org/manual/meta/aggregation-quick-reference/).
 
-For the exercises, we'll use aggregation to get the overall space group distribution and the marginal distributions for specific anion chemistries, to see e.g. if oxides, sulfides, fluorides and chlorides prefer different space groups. In preparation, let's mark each material by it's most electronegative element - a proxy of whether it is an oxide, fluoride, etc.:
+For the exercises, we'll use aggregation to get the overall space group distribution and the marginal distributions for specific anion chemistries, to see e.g. if oxides, sulfides, fluorides and chlorides prefer different space groups. In preparation, let's mark each material by it's most electronegative element -- a proxy of whether it is an oxide, fluoride, etc. [^1]:
+
+[^1]: Thanks to Prof. Shyue P. Ong of UC San Diego for [this example](https://github.com/materialsvirtuallab/nano106/blob/8e150151e485d71e52dc91867b9ac78769ae9ffe/lectures/lecture_5_the_230_space_groups/Datamining%20the%20Materials%20Project%20for%20Space%20Group%20statistics.ipynb) of mining Materials Project data.
 
 ~~~ {.python}
 def get_chemistry(doc):

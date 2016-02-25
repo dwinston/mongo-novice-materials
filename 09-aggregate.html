@@ -100,7 +100,7 @@
 {&#39;_id&#39;: 1, &#39;count&#39;: 6}
 {&#39;_id&#39;: 8, &#39;count&#39;: 5}</code></pre>
 <p>The output of the aggregation can serve as a valid collection: the documents yielded still have <code>_id</code> fields, but they are different than those in the <code>materials</code> collection. We used the <code>$sum</code> accumulator to produce a new field. You can find a pipeline stage reference <a href="https://docs.mongodb.org/manual/meta/aggregation-quick-reference/">here</a>.</p>
-<p>For the exercises, we’ll use aggregation to get the overall space group distribution and the marginal distributions for specific anion chemistries, to see e.g. if oxides, sulfides, fluorides and chlorides prefer different space groups. In preparation, let’s mark each material by it’s most electronegative element - a proxy of whether it is an oxide, fluoride, etc.:</p>
+<p>For the exercises, we’ll use aggregation to get the overall space group distribution and the marginal distributions for specific anion chemistries, to see e.g. if oxides, sulfides, fluorides and chlorides prefer different space groups. In preparation, let’s mark each material by it’s most electronegative element – a proxy of whether it is an oxide, fluoride, etc. <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> get_chemistry(doc):
     anion <span class="op">=</span> db.elements.find(
         {<span class="st">&quot;Symbol&quot;</span>: {<span class="st">&quot;$in&quot;</span>: doc[<span class="st">&quot;elements&quot;</span>]}},
@@ -134,6 +134,12 @@
 <p>Let’s datamine a bit and look at the statistics for specific chemisties: do oxides, sulfides, fluorides and chlorides prefer different space groups? Perform aggregations as in the previous exercise, but prepend your pipeline with a <code>$match</code> stage to filter for chemistry.</p>
 </div>
 </section>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Thanks to Prof. Shyue P. Ong of UC San Diego for <a href="https://github.com/materialsvirtuallab/nano106/blob/8e150151e485d71e52dc91867b9ac78769ae9ffe/lectures/lecture_5_the_230_space_groups/Datamining%20the%20Materials%20Project%20for%20Space%20Group%20statistics.ipynb">this example</a> of mining Materials Project data.<a href="#fnref1">↩</a></p></li>
+</ol>
+</div>
         </div>
       </div>
       </article>
