@@ -31,7 +31,7 @@
           <h2 class="subtitle">Remove Data</h2>
           <section class="objectives panel panel-warning">
 <div class="panel-heading">
-<h2><span class="glyphicon glyphicon-certificate"></span>Learning Objectives</h2>
+<h2 id="learning-objectives"><span class="glyphicon glyphicon-certificate"></span>Learning Objectives</h2>
 </div>
 <div class="panel-body">
 <ul>
@@ -40,33 +40,33 @@
 </ul>
 </div>
 </section>
-<p>Paragraphs of text — possibly including <a href="reference.html#definitions">definitions</a> — mixed with:</p>
-<pre class="sourceCode python"><code class="sourceCode python">some code:
-    to be displayed</code></pre>
-<p>and:</p>
-<pre class="output"><code>output
-from
-program</code></pre>
-<p>and:</p>
-<pre class="error"><code>error reports from programs (if any)</code></pre>
-<p>and possibly including some of these:</p>
+<p>You can use the <code>delete_one()</code> method and the <code>delete_many()</code> method to remove documents from a collection. The method takes a conditions document that determines the documents to remove. To specify a remove condition, use the same structure and syntax as the query conditions.</p>
+<p>Let’s remove the fake material we may have upserted during a recent exercise:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result <span class="op">=</span> db.materials.delete_many({<span class="st">&quot;material_id&quot;</span>: <span class="st">&quot;mp-NaN&quot;</span>})</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result.deleted_count</code></pre></div>
+<pre class="output"><code>1</code></pre>
+<p>Let’s proceed to destroy our materials collection (dont’ worry – we’ll reload everything at the beginning of the next topic).</p>
+<p>First, let’s delete all elemental compounts:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result <span class="op">=</span> db.materials.delete_many({<span class="st">&quot;nelements&quot;</span>: <span class="dv">1</span>})</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result.deleted_count</code></pre></div>
+<pre class="output"><code>419</code></pre>
+<p>We’re impatient. Let’s just remove everything by specifying an empty conditions document:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result <span class="op">=</span> db.materials.delete_many({})</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result.deleted_count</code></pre></div>
+<pre class="output"><code>65721</code></pre>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">db.materials.count()</code></pre></div>
+<pre class="output"><code>0</code></pre>
+<p>I’m glad we have a backup!</p>
+<p>The remove all operation only removes the documents from the collection. The collection itself, as well as any indexes for the collection (we’ll go over indexes later), remain. To remove all documents from a collection, it may be more efficient to drop the entire collection, including the indexes, and then recreate the collection and rebuild the indexes. Use the drop() method to drop a collection, including any indexes.</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">db.materials.drop()</code></pre></div>
 <aside class="callout panel panel-info">
 <div class="panel-heading">
-<h2><span class="glyphicon glyphicon-pushpin"></span>Callout Box</h2>
+<h2 id="trust-but-verify"><span class="glyphicon glyphicon-pushpin"></span>Trust but Verify</h2>
 </div>
 <div class="panel-body">
-<p>An aside of some kind.</p>
+<p>This should go without saying, but it’s a good idea to pass any <code>delete_many()</code> conditions document to a <code>find()</code> first to be sure what you want to remove is what MongoDB thinks you want to remove!</p>
 </div>
 </aside>
-<p>and one or more of these at the end:</p>
-<section class="challenge panel panel-success">
-<div class="panel-heading">
-<h2><span class="glyphicon glyphicon-pencil"></span>Challenge Title</h2>
-</div>
-<div class="panel-body">
-<p>Description of a single challenge, separated from the title by a blank line. There may be several challenges; they should all come at the end of the file, and each should have a short, meaningful title.</p>
-</div>
-</section>
         </div>
       </div>
       </article>
