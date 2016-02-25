@@ -31,41 +31,182 @@
           <h2 class="subtitle">Find Data</h2>
           <section class="objectives panel panel-warning">
 <div class="panel-heading">
-<h2><span class="glyphicon glyphicon-certificate"></span>Learning Objectives</h2>
+<h2 id="learning-objectives"><span class="glyphicon glyphicon-certificate"></span>Learning Objectives</h2>
 </div>
 <div class="panel-body">
 <ul>
 <li>Query by a top-level field</li>
+<li>Project to get only the fields you need</li>
 <li>Query by a field in an embedded document</li>
 <li>Query by a field in an array</li>
 </ul>
 </div>
 </section>
-<p>Paragraphs of text — possibly including <a href="reference.html#definitions">definitions</a> — mixed with:</p>
-<pre class="sourceCode python"><code class="sourceCode python">some code:
-    to be displayed</code></pre>
-<p>and:</p>
-<pre class="output"><code>output
-from
-program</code></pre>
-<p>and:</p>
-<pre class="error"><code>error reports from programs (if any)</code></pre>
-<p>and possibly including some of these:</p>
-<aside class="callout panel panel-info">
-<div class="panel-heading">
-<h2><span class="glyphicon glyphicon-pushpin"></span>Callout Box</h2>
-</div>
-<div class="panel-body">
-<p>An aside of some kind.</p>
-</div>
-</aside>
-<p>and one or more of these at the end:</p>
+<p>You can use the <code>find()</code> method to issue a query to retrieve data from a collection in MongoDB. All queries in MongoDB have the scope of a single collection.</p>
+<p>Queries can return all documents in a collection or only the documents that match a specified filter or criteria. You can specify the filter or criteria in a document and pass it as a parameter to the <code>find()</code> method.</p>
+<p>The <code>find()</code> method returns query results in a cursor, which is an iterable object that yields documents.</p>
+<h3 id="gotta-catch-em-all">Gotta catch ’em all</h3>
+<p>To return all documents in a collection, call the <code>find()</code> method without a criteria document.</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cursor <span class="op">=</span> db.materials.find()</code></pre></div>
+<p>Let’s iterate over the cursor and print a few material ids.</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">how_many <span class="op">=</span> <span class="dv">5</span>
+counter <span class="op">=</span> <span class="dv">0</span>
+<span class="cf">for</span> document <span class="op">in</span> cursor:
+    <span class="cf">if</span> counter <span class="op">&lt;</span> how_many:
+        <span class="bu">print</span>(document[<span class="st">&#39;material_id&#39;</span>])
+        counter <span class="op">+=</span> <span class="dv">1</span>
+    <span class="cf">else</span>:
+        <span class="cf">break</span></code></pre></div>
+<pre class="output"><code>mp-568345
+mp-12671
+mp-1703
+mp-5152
+mp-569624</code></pre>
+<p>There’s an easier way to limit how many documents are yielded by a cursor, via method chaining:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="cf">for</span> document <span class="op">in</span> cursor.limit(<span class="dv">5</span>):
+    <span class="bu">print</span>(document[<span class="st">&#39;material_id&#39;</span>])</code></pre></div>
+<pre class="output"><code>mp-31899
+mp-567842
+mp-6574
+mp-6947
+mp-3236</code></pre>
+<h3 id="query-by-a-top-level-field">Query by a top-level field</h3>
+<p>The following operation finds documents whose <strong>nelements</strong> field equals <strong>3</strong>:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cursor <span class="op">=</span> db.materials.find({<span class="st">&quot;nelements&quot;</span>: <span class="dv">3</span>})</code></pre></div>
+<p>Let’s print (“pretty print”, for nice indentation) a few of the results:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">from</span> pprint <span class="im">import</span> pprint
+
+<span class="cf">for</span> doc <span class="op">in</span> cursor.limit(<span class="dv">3</span>):
+    pprint(doc)</code></pre></div>
+<pre class="output"><code>{&#39;_id&#39;: ObjectId(&#39;56ce22947943f62692bdada6&#39;),
+ &#39;chemsys&#39;: &#39;Er-O-S&#39;,
+ &#39;elasticity&#39;: None,
+ &#39;elements&#39;: [&#39;Er&#39;, &#39;O&#39;, &#39;S&#39;],
+ &#39;material_id&#39;: &#39;mp-12671&#39;,
+ &#39;nelements&#39;: 3,
+ &#39;pretty_formula&#39;: &#39;Er2SO2&#39;,
+ &#39;spacegroup&#39;: {&#39;crystal_system&#39;: &#39;trigonal&#39;,
+                &#39;hall&#39;: &#39;-P 3 2=&#39;,
+                &#39;number&#39;: 164,
+                &#39;point_group&#39;: &#39;-3m&#39;,
+                &#39;source&#39;: &#39;spglib&#39;,
+                &#39;symbol&#39;: &#39;P-3m1&#39;}}
+{&#39;_id&#39;: ObjectId(&#39;56ce22947943f62692bdada8&#39;),
+ &#39;chemsys&#39;: &#39;La-O-Si&#39;,
+ &#39;elasticity&#39;: None,
+ &#39;elements&#39;: [&#39;La&#39;, &#39;O&#39;, &#39;Si&#39;],
+ &#39;material_id&#39;: &#39;mp-5152&#39;,
+ &#39;nelements&#39;: 3,
+ &#39;pretty_formula&#39;: &#39;La2SiO5&#39;,
+ &#39;spacegroup&#39;: {&#39;crystal_system&#39;: &#39;monoclinic&#39;,
+                &#39;hall&#39;: &#39;-P 2yab&#39;,
+                &#39;number&#39;: 14,
+                &#39;point_group&#39;: &#39;2/m&#39;,
+                &#39;source&#39;: &#39;spglib&#39;,
+                &#39;symbol&#39;: &#39;P2_1/c&#39;}}
+{&#39;_id&#39;: ObjectId(&#39;56ce22947943f62692bdadab&#39;),
+ &#39;chemsys&#39;: &#39;Cl-Fe-O&#39;,
+ &#39;elasticity&#39;: {&#39;G_Reuss&#39;: 4.800058831100799,
+                &#39;G_VRH&#39;: 15.695815587428928,
+                &#39;G_Voigt&#39;: 26.591572343757058,
+                &#39;K_Reuss&#39;: 12.632559688113227,
+                &#39;K_VRH&#39;: 27.637901832532986,
+                &#39;K_Voigt&#39;: 42.643243976952746,
+                &#39;calculations&#39;: {&#39;energy_cutoff&#39;: 700.0,
+                                 &#39;kpoint_density&#39;: 7000,
+                                 &#39;pseudopotentials&#39;: [&#39;Fe_pv&#39;, &#39;Cl&#39;, &#39;O&#39;]},
+                &#39;elastic_anisotropy&#39;: 25.074876418379876,
+                &#39;elastic_tensor&#39;: [[132.83779269421643,
+                                    4.717792594504168,
+                                    41.313046328714506,
+                                    0.0,
+                                    0.0,
+                                    0.0],
+                                   [4.717792594504168,
+                                    13.477772725303467,
+                                    4.593045165520949,
+                                    0.0,
+                                    0.0,
+                                    0.0],
+                                   [41.313046328714506,
+                                    4.593045165520949,
+                                    136.22586219557556,
+                                    0.0,
+                                    0.0,
+                                    0.0],
+                                   [0.0, 0.0, 0.0, 1.98697116, 0.0, 0.0],
+                                   [0.0, 0.0, 0.0, 0.0, 51.08350865666667, 0.0],
+                                   [0.0,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    2.581534060000001]],
+                &#39;poisson_ratio&#39;: 0.26124289904174286},
+ &#39;elements&#39;: [&#39;Cl&#39;, &#39;Fe&#39;, &#39;O&#39;],
+ &#39;material_id&#39;: &#39;mp-552787&#39;,
+ &#39;nelements&#39;: 3,
+ &#39;pretty_formula&#39;: &#39;FeClO&#39;,
+ &#39;spacegroup&#39;: {&#39;crystal_system&#39;: &#39;orthorhombic&#39;,
+                &#39;hall&#39;: &#39;P 2 2ab -1ab&#39;,
+                &#39;number&#39;: 59,
+                &#39;point_group&#39;: &#39;mmm&#39;,
+                &#39;source&#39;: &#39;spglib&#39;,
+                &#39;symbol&#39;: &#39;Pmmn&#39;}}</code></pre>
+<h3 id="projection-to-select-fields">Projection to select fields</h3>
+<p>That last query returned all fields for each document. We can use a projection, specified as JSON, to indicate which fields we want. The <code>_id</code> field is included by default – we must be explicit if we don’t want it returned.</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cursor <span class="op">=</span> db.materials.find({<span class="st">&quot;nelements&quot;</span>: <span class="dv">3</span>},
+                           {<span class="st">&quot;material_id&quot;</span>: <span class="dv">1</span>, <span class="st">&quot;pretty_formula&quot;</span>: <span class="dv">1</span>, <span class="st">&quot;_id&quot;</span>: <span class="dv">0</span>})
+
+<span class="cf">for</span> doc <span class="op">in</span> cursor.limit(<span class="dv">3</span>):
+    pprint(doc)</code></pre></div>
+<pre class="output"><code>{&#39;material_id&#39;: &#39;mp-12671&#39;, &#39;pretty_formula&#39;: &#39;Er2SO2&#39;}
+{&#39;material_id&#39;: &#39;mp-5152&#39;, &#39;pretty_formula&#39;: &#39;La2SiO5&#39;}
+{&#39;material_id&#39;: &#39;mp-552787&#39;, &#39;pretty_formula&#39;: &#39;FeClO&#39;}</code></pre>
+<h3 id="query-by-a-field-in-an-embedded-document">Query by a field in an embedded document</h3>
+<p>To specify a condition on a field within an embedded document, use dot notation. Dot notation requires quotes around the whole dotted field name.</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cursor <span class="op">=</span> db.materials.find({<span class="st">&quot;spacegroup.crystal_system&quot;</span>: <span class="st">&quot;cubic&quot;</span>})
+
+<span class="bu">print</span>(cursor.count())</code></pre></div>
+<pre class="output"><code>9408</code></pre>
+<p>Projection can take advantage of the same dot notation:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cursor <span class="op">=</span> db.materials.find({<span class="st">&quot;nelements&quot;</span>: <span class="dv">2</span>}, {<span class="st">&quot;spacegroup.crystal_system&quot;</span>: <span class="dv">1</span>, <span class="st">&quot;elements&quot;</span>: <span class="dv">1</span>, <span class="st">&quot;_id&quot;</span>: <span class="dv">0</span>})
+
+<span class="cf">for</span> doc <span class="op">in</span> cursor.limit(<span class="dv">3</span>):
+    pprint(doc)</code></pre></div>
+<pre class="output"><code>{&#39;elements&#39;: [&#39;Yb&#39;, &#39;Zn&#39;], &#39;spacegroup&#39;: {&#39;crystal_system&#39;: &#39;cubic&#39;}}
+{&#39;elements&#39;: [&#39;Cr&#39;, &#39;Hf&#39;], &#39;spacegroup&#39;: {&#39;crystal_system&#39;: &#39;hexagonal&#39;}}
+{&#39;elements&#39;: [&#39;B&#39;, &#39;Lu&#39;], &#39;spacegroup&#39;: {&#39;crystal_system&#39;: &#39;cubic&#39;}}</code></pre>
+<h3 id="query-by-a-field-in-an-array">Query by a field in an array</h3>
+<p>How many materials in our collection contain iron? When a field is an array, testing for membership has the same form as testing for equality:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">db.materials.find({<span class="st">&quot;elements&quot;</span>: <span class="st">&quot;Fe&quot;</span>}).count()</code></pre></div>
+<pre class="output"><code>5813</code></pre>
+<p>If you supply an array as the value under test, we can see that four polymorphs of iron are present in our collection:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">db.materials.find({<span class="st">&quot;elements&quot;</span>: [<span class="st">&quot;Fe&quot;</span>]}).count()</code></pre></div>
+<pre class="output"><code>4</code></pre>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
-<h2><span class="glyphicon glyphicon-pencil"></span>Challenge Title</h2>
+<h2 id="dot-notation-and-projections"><span class="glyphicon glyphicon-pencil"></span>Dot Notation and Projections</h2>
 </div>
 <div class="panel-body">
-<p>Description of a single challenge, separated from the title by a blank line. There may be several challenges; they should all come at the end of the file, and each should have a short, meaningful title.</p>
+<p>Which query below yields documents containing the crystal system and spacegroup number for all binary compounds?</p>
+<ol style="list-style-type: decimal">
+<li><code>db.materials.find({&quot;nelements&quot;: 2}, {&quot;spacegroup&quot;: {&quot;crystal_system&quot;: 1, &quot;number&quot;: 1}})</code></li>
+<li><code>db.materials.find({&quot;nelements&quot;: 2}, {&quot;spacegroup.crystal_system&quot;: 1, &quot;spacegroup.number&quot;: 1})</code></li>
+</ol>
+</div>
+</section>
+<section class="challenge panel panel-success">
+<div class="panel-heading">
+<h2 id="combining-conditions"><span class="glyphicon glyphicon-pencil"></span>Combining Conditions</h2>
+</div>
+<div class="panel-body">
+<p>Which query below returns the number of binary oxides (oxygen-containing, two-element materials) in our collection?</p>
+<ol style="list-style-type: decimal">
+<li><code>db.materials.find({&quot;elements&quot;: &quot;O&quot;}).limit(2).count()</code></li>
+<li><code>db.materials.find({&quot;elements&quot;: &quot;O&quot;, &quot;nelements&quot;: 2}).count()</code></li>
+<li><code>db.materials.find({&quot;elements&quot;: [&quot;O&quot;], &quot;nelements&quot;: 2}).count()</code></li>
+</ol>
 </div>
 </section>
         </div>
