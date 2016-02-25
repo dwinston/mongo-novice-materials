@@ -13,7 +13,7 @@ from MongoDB's document/collection approach, but we will only cover MongoDB
 today.
 
 MongoDB trades off the strictness of SQL for a degree of simplicity and
-flexibility often desirable for scientists who are often not certain about the
+flexibility desirable for scientists who are often not certain about the
 best schema design for new/changing data sets. Whereas SQL lends itself well to
 enforcing a schema and thus ensuring data validation at the database level, a
 system like MongoDB does not require setting/migrating schemas to get started

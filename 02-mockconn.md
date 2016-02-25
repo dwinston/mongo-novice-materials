@@ -18,7 +18,7 @@ Python library to walk through MongoDB ideas for the first few topics. If you
 have a Mongo server running, feel free to use `pymongo.MongoClient` instead.
 
 
-First, let's connect to the (mock) server an get a handle for our client.
+First, let's connect to the (mock) server and get a handle for our client.
 
 ~~~ {.python}
 from mongomock import MongoClient
