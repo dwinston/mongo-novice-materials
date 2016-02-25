@@ -96,7 +96,7 @@ def halide_systems():
             yield "-".join(sorted([doc["Symbol"], halogen]))
 ~~~
 
-TO demonstrate use of the generator let's see which systems contain copper:
+To demonstrate use of the generator let's see which systems contain copper:
 
 ~~~ {.python}
 [s for s in list(halide_systems()) if 'Cu' in s]

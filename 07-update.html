@@ -93,7 +93,7 @@ db.elements.drop() <span class="co"># If it exists, clear it</span>
         X <span class="op">=</span> db.elements.find_one({<span class="st">&quot;Symbol&quot;</span>: halogen})[<span class="st">&quot;X&quot;</span>]
         <span class="cf">for</span> doc <span class="op">in</span> db.elements.find({<span class="st">&quot;X&quot;</span>: {<span class="st">&quot;$lt&quot;</span>: X}}):
             <span class="cf">yield</span> <span class="st">&quot;-&quot;</span>.join(<span class="bu">sorted</span>([doc[<span class="st">&quot;Symbol&quot;</span>], halogen]))</code></pre></div>
-<p>TO demonstrate use of the generator let’s see which systems contain copper:</p>
+<p>To demonstrate use of the generator let’s see which systems contain copper:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">[s <span class="cf">for</span> s <span class="op">in</span> <span class="bu">list</span>(halide_systems()) <span class="cf">if</span> <span class="st">&#39;Cu&#39;</span> <span class="op">in</span> s]</code></pre></div>
 <pre class="output"><code>[&#39;Cu-F&#39;, &#39;Cl-Cu&#39;, &#39;Br-Cu&#39;, &#39;Cu-I&#39;, &#39;At-Cu&#39;]</code></pre>
 <p>Now, we’re ready for the show. We use the <code>$in</code> query operator to test for membership of a compound’s <strong>chemsys</strong> in our list of halide systems:</p>
