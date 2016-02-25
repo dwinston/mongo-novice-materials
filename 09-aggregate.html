@@ -40,31 +40,98 @@
 </ul>
 </div>
 </section>
-<p>Paragraphs of text — possibly including <a href="reference.html#definitions">definitions</a> — mixed with:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">some code:
-    to be displayed</code></pre></div>
-<p>and:</p>
-<pre class="output"><code>output
-from
-program</code></pre>
-<p>and:</p>
-<pre class="error"><code>error reports from programs (if any)</code></pre>
-<p>and possibly including some of these:</p>
-<aside class="callout panel panel-info">
-<div class="panel-heading">
-<h2 id="callout-box"><span class="glyphicon glyphicon-pushpin"></span>Callout Box</h2>
-</div>
-<div class="panel-body">
-<p>An aside of some kind.</p>
-</div>
-</aside>
-<p>and one or more of these at the end:</p>
+<p>MongoDB can perform aggregation operations, such as grouping by a specified key and evaluating a total or a count for each distinct group.</p>
+<p>Use the <code>aggregate()</code> method to perform a stage-based aggregation. The <code>aggregate()</code> method accepts as its argument an array of stages, where each stage, processed sequentially, describes a data processing step.</p>
+<pre><code>db.collection.aggregate([&lt;stage1&gt;, &lt;stage2&gt;, ...])</code></pre>
+<p>Use the <code>$group</code> stage to group by a specified key. In the <code>$group</code> stage, specify the group by key in the <code>_id</code> field. <code>$group</code> accesses fields by the field path, which is the field name prefixed by a dollar sign <strong><span class="math inline">\(**. The `\)</span>group` stage can use accumulators to perform calculations for each group. The following example groups the documents in the </strong>materials** collection by the <strong>nelements</strong> field and uses the $sum accumulator to count the documents for each group.</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cursor <span class="op">=</span> db.materials.aggregate(
+    [
+        {<span class="st">&quot;$group&quot;</span>: {<span class="st">&quot;_id&quot;</span>: <span class="st">&quot;$nelements&quot;</span>, <span class="st">&quot;count&quot;</span>: {<span class="st">&quot;$sum&quot;</span>: <span class="dv">1</span>}}}
+    ]
+)</code></pre></div>
+<p>Iterate the cursor and print the matching documents.</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="cf">for</span> doc <span class="op">in</span> cursor:
+    <span class="bu">print</span>(doc)</code></pre></div>
+<pre class="output"><code>{&#39;_id&#39;: 8, &#39;count&#39;: 5}
+{&#39;_id&#39;: 7, &#39;count&#39;: 68}
+{&#39;_id&#39;: 5, &#39;count&#39;: 5890}
+{&#39;_id&#39;: 4, &#39;count&#39;: 17561}
+{&#39;_id&#39;: 6, &#39;count&#39;: 866}
+{&#39;_id&#39;: 2, &#39;count&#39;: 9809}
+{&#39;_id&#39;: 3, &#39;count&#39;: 31522}
+{&#39;_id&#39;: 1, &#39;count&#39;: 419}</code></pre>
+<p>The <code>_id</code> field contains the distinct <strong>nelements</strong> value. i.e. the group-by-key value.</p>
+<p>Your can use a <code>$match</code> stage in your aggregation pipeline to filter documents. <code>$match</code> uses the MongoDB query syntax, i.e. the same as that you pass to <code>collection.find()</code>.</p>
+<p>Let’s restrict our previous aggregation to oxygen-containing compounds:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cursor <span class="op">=</span> db.materials.aggregate(
+    [
+        {<span class="st">&quot;$match&quot;</span>: {<span class="st">&quot;elements&quot;</span>: <span class="st">&quot;O&quot;</span>}},
+        {<span class="st">&quot;$group&quot;</span>: {<span class="st">&quot;_id&quot;</span>: <span class="st">&quot;$nelements&quot;</span>, <span class="st">&quot;count&quot;</span>: {<span class="st">&quot;$sum&quot;</span>: <span class="dv">1</span>}}}
+    ]
+)
+
+<span class="cf">for</span> doc <span class="op">in</span> cursor:
+    <span class="bu">print</span>(doc)</code></pre></div>
+<pre class="output"><code>{&#39;_id&#39;: 8, &#39;count&#39;: 5}
+{&#39;_id&#39;: 1, &#39;count&#39;: 6}
+{&#39;_id&#39;: 7, &#39;count&#39;: 65}
+{&#39;_id&#39;: 5, &#39;count&#39;: 5484}
+{&#39;_id&#39;: 4, &#39;count&#39;: 15113}
+{&#39;_id&#39;: 6, &#39;count&#39;: 816}
+{&#39;_id&#39;: 2, &#39;count&#39;: 1519}
+{&#39;_id&#39;: 3, &#39;count&#39;: 15117}</code></pre>
+<p>Finally, let’s sort the results by <strong>count</strong> using a <code>$sort</code> stage.</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cursor <span class="op">=</span> db.materials.aggregate(
+    [
+        {<span class="st">&quot;$match&quot;</span>: {<span class="st">&quot;elements&quot;</span>: <span class="st">&quot;O&quot;</span>}},
+        {<span class="st">&quot;$group&quot;</span>: {<span class="st">&quot;_id&quot;</span>: <span class="st">&quot;$nelements&quot;</span>, <span class="st">&quot;count&quot;</span>: {<span class="st">&quot;$sum&quot;</span>: <span class="dv">1</span>}}},
+        {<span class="st">&quot;$sort&quot;</span>: {<span class="st">&quot;count&quot;</span>: <span class="op">-</span><span class="dv">1</span>}}
+    ]
+)
+
+<span class="cf">for</span> doc <span class="op">in</span> cursor:
+    <span class="bu">print</span>(doc)</code></pre></div>
+<pre class="output"><code>{&#39;_id&#39;: 3, &#39;count&#39;: 15117}
+{&#39;_id&#39;: 4, &#39;count&#39;: 15113}
+{&#39;_id&#39;: 5, &#39;count&#39;: 5484}
+{&#39;_id&#39;: 2, &#39;count&#39;: 1519}
+{&#39;_id&#39;: 6, &#39;count&#39;: 816}
+{&#39;_id&#39;: 7, &#39;count&#39;: 65}
+{&#39;_id&#39;: 1, &#39;count&#39;: 6}
+{&#39;_id&#39;: 8, &#39;count&#39;: 5}</code></pre>
+<p>The output of the aggregation can serve as a valid collection: the documents yielded still have <code>_id</code> fields, but they are different than those in the <code>materials</code> collection. We used the <code>$sum</code> accumulator to produce a new field. You can find a pipeline stage reference <a href="https://docs.mongodb.org/manual/meta/aggregation-quick-reference/">here</a>.</p>
+<p>For the exercises, we’ll use aggregation to get the overall space group distribution and the marginal distributions for specific anion chemistries, to see e.g. if oxides, sulfides, fluorides and chlorides prefer different space groups. In preparation, let’s mark each material by it’s most electronegative element - a proxy of whether it is an oxide, fluoride, etc.:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> get_chemistry(doc):
+    anion <span class="op">=</span> db.elements.find(
+        {<span class="st">&quot;Symbol&quot;</span>: {<span class="st">&quot;$in&quot;</span>: doc[<span class="st">&quot;elements&quot;</span>]}},
+        {<span class="st">&quot;Symbol&quot;</span>: <span class="dv">1</span>, <span class="st">&quot;X&quot;</span>: <span class="dv">1</span>, <span class="st">&quot;_id&quot;</span>: <span class="dv">0</span>}
+    ).sort([(<span class="st">&#39;X&#39;</span>, <span class="op">-</span><span class="dv">1</span>)])[<span class="dv">0</span>][<span class="st">&quot;Symbol&quot;</span>]
+    <span class="cf">if</span> anion <span class="op">==</span> <span class="st">&quot;O&quot;</span>:
+        <span class="cf">return</span> <span class="st">&quot;Oxide&quot;</span>
+    <span class="cf">elif</span> anion <span class="op">==</span> <span class="st">&quot;S&quot;</span>:
+        <span class="cf">return</span> <span class="st">&quot;Sulfide&quot;</span>
+    <span class="cf">elif</span> anion <span class="op">==</span> <span class="st">&quot;F&quot;</span>:
+        <span class="cf">return</span> <span class="st">&quot;Fluoride&quot;</span>
+    <span class="cf">elif</span> anion <span class="op">==</span> <span class="st">&quot;Cl&quot;</span>:
+        <span class="cf">return</span> <span class="st">&quot;Chloride&quot;</span>
+    <span class="cf">return</span> <span class="va">None</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="cf">for</span> doc <span class="op">in</span> db.materials.find({<span class="st">&quot;elements&quot;</span>: {<span class="st">&quot;$in&quot;</span>: [<span class="st">&quot;O&quot;</span>, <span class="st">&quot;S&quot;</span>, <span class="st">&quot;F&quot;</span>, <span class="st">&quot;Cl&quot;</span>]}}, {<span class="st">&quot;elements&quot;</span>: <span class="dv">1</span>}):
+    anion <span class="op">=</span> get_chemistry(doc)
+    db.materials.update_one({<span class="st">&quot;_id&quot;</span>: doc[<span class="st">&quot;_id&quot;</span>]}, {<span class="st">&quot;$set&quot;</span>: {<span class="st">&quot;anion_chemistry&quot;</span>: anion}})</code></pre></div>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
-<h2 id="challenge-title"><span class="glyphicon glyphicon-pencil"></span>Challenge Title</h2>
+<h2 id="most-common-space-groups"><span class="glyphicon glyphicon-pencil"></span>Most Common Space Groups</h2>
 </div>
 <div class="panel-body">
-<p>Description of a single challenge, separated from the title by a blank line. There may be several challenges; they should all come at the end of the file, and each should have a short, meaningful title.</p>
+<p>Perform an aggregation to get a “top twenty” list of the most common space groups and their respective counts, sorted by descending count. Use a <code>$limit</code> stage in your pipeline to limit the results.</p>
+</div>
+</section>
+<section class="challenge panel panel-success">
+<div class="panel-heading">
+<h2 id="space-group-distributions-for-specific-chemistries"><span class="glyphicon glyphicon-pencil"></span>Space Group Distributions for Specific Chemistries</h2>
+</div>
+<div class="panel-body">
+<p>Let’s datamine a bit and look at the statistics for specific chemisties: do oxides, sulfides, fluorides and chlorides prefer different space groups? Perform aggregations as in the previous exercise, but prepend your pipeline with a <code>$match</code> stage to filter for chemistry.</p>
 </div>
 </section>
         </div>
