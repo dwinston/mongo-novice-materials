@@ -72,7 +72,7 @@ print(result.matched_count, result.modified_count)
 
 The `update_one()` method updates a single document. To update multiple documents, use the `update_many()` method. Let's tag all of the halides, where a halide is a binary compounds for which one part is a halogen atom and the other part is an element that is less electronegative than the halogen. Specifically, we will use the `$addToSet` update operator to add "halide" idempotently to a compound's **tags** array, creating the array if it does not exist.
 
-First, let's generate a list of halide chemical systems. The [pymatgen](http://pymatgen.org/) Python package includes a JSON file with basic information on chemical elements, including Pauling electronegativity ("X") if known, a copy of which you downloaded earlier. Let's load it as a new MongoDB collection:
+First, let's generate a list of halide chemical systems. The [pymatgen](http://pymatgen.org/) Python package includes a JSON file, a copy of which you downloaded earlier, with basic information on chemical elements, including Pauling electronegativity ("X") if known. Let's load it as a new MongoDB collection:
 
 ~~~ {.python}
 import json
