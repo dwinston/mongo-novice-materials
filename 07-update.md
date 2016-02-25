@@ -164,7 +164,7 @@ db.materials.find({"tags": "halide"}).count()
 >```
 >? What does the **upsert** keyword argument do? Check out other attributes of `result`.
 
-> ## Phase-change Memory? {.challenge}
+> ## How's Your Phase-change Memory? {.challenge}
 >
 > A chalcogenide is a chemical compound consisting of at least one chalcogen anion (commonly restricted to 'S', 'Se', or 'Te') and at least one more electropositive element. Modify the `halide_systems` generator we wrote and use `update_many()` to ensure a "chalcogenide" tag for all binary chalcogenides.
 
