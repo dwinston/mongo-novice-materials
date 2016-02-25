@@ -31,7 +31,7 @@
           <h2 class="subtitle">Insert Data</h2>
           <section class="objectives panel panel-warning">
 <div class="panel-heading">
-<h2><span class="glyphicon glyphicon-certificate"></span>Learning Objectives</h2>
+<h2 id="learning-objectives"><span class="glyphicon glyphicon-certificate"></span>Learning Objectives</h2>
 </div>
 <div class="panel-body">
 <ul>
@@ -44,7 +44,7 @@
 </section>
 <aside class="callout panel panel-info">
 <div class="panel-heading">
-<h2><span class="glyphicon glyphicon-pushpin"></span>Proper attribution</h2>
+<h2 id="proper-attribution"><span class="glyphicon glyphicon-pushpin"></span>Proper attribution</h2>
 </div>
 <div class="panel-body">
 <p>The intro to JSON here, including the railroad diagrams, were taken from <a href="http://json.org">json.org</a>.</p>
@@ -58,22 +58,24 @@
 <p>In JSON, they take on these forms:</p>
 <ul>
 <li><p>An <em>object</em> is an unordered set of name/value pairs.</p>
-<pre class="sourceCode python"><code class="sourceCode python">{<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-568345&#39;</span>, <span class="st">&#39;nelements&#39;</span>: <span class="dv">1</span>, <span class="st">&#39;pretty_formula&#39;</span>: <span class="st">&#39;Fe&#39;</span>}</code></pre>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">{<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-568345&#39;</span>, <span class="st">&#39;nelements&#39;</span>: <span class="dv">1</span>, <span class="st">&#39;pretty_formula&#39;</span>: <span class="st">&#39;Fe&#39;</span>}</code></pre></div>
 <div class="figure">
 <img src="./fig/json-object.gif" />
+
 </div></li>
 <li><p>An <em>array</em> is an ordered collection of values.</p>
-<pre class="sourceCode python"><code class="sourceCode python">[{<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-568345&#39;</span>, <span class="st">&#39;nelements&#39;</span>: <span class="dv">1</span>, <span class="st">&#39;pretty_formula&#39;</span>: <span class="st">&#39;Fe&#39;</span>},
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">[{<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-568345&#39;</span>, <span class="st">&#39;nelements&#39;</span>: <span class="dv">1</span>, <span class="st">&#39;pretty_formula&#39;</span>: <span class="st">&#39;Fe&#39;</span>},
  {<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-12671&#39;</span>, <span class="st">&#39;nelements&#39;</span>: <span class="dv">3</span>, <span class="st">&#39;pretty_formula&#39;</span>: <span class="st">&#39;Er2SO2&#39;</span>},
- {<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-1703&#39;</span>, <span class="st">&#39;nelements&#39;</span>: <span class="dv">2</span>, <span class="st">&#39;pretty_formula&#39;</span>: <span class="st">&#39;YbZn&#39;</span>}]</code></pre>
+ {<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-1703&#39;</span>, <span class="st">&#39;nelements&#39;</span>: <span class="dv">2</span>, <span class="st">&#39;pretty_formula&#39;</span>: <span class="st">&#39;YbZn&#39;</span>}]</code></pre></div>
 <div class="figure">
 <img src="./fig/json-array.gif" />
+
 </div></li>
 <li><p>A <em>value</em> can be a <em>string</em> in quotes, or a <em>number</em>, or <strong>true</strong> or <strong>false</strong> or <strong>null</strong>, or an <em>object</em> or an <em>array</em>. These structures can be nested.</p>
-<pre class="sourceCode python"><code class="sourceCode python">{<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-2340&#39;</span>,
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">{<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-2340&#39;</span>,
  <span class="co">&#39;chemsys&#39;</span>: <span class="st">&#39;Na-O&#39;</span>,
- <span class="co">&#39;has_bandstructure&#39;</span>: <span class="ot">True</span>,
- <span class="co">&#39;elasticity&#39;</span>: <span class="ot">None</span>,
+ <span class="co">&#39;has_bandstructure&#39;</span>: <span class="va">True</span>,
+ <span class="co">&#39;elasticity&#39;</span>: <span class="va">None</span>,
  <span class="co">&#39;elements&#39;</span>: [<span class="st">&#39;Na&#39;</span>, <span class="st">&#39;O&#39;</span>],
  <span class="co">&#39;nelements&#39;</span>: <span class="dv">2</span>,
  <span class="co">&#39;pretty_formula&#39;</span>: <span class="st">&#39;Na2O2&#39;</span>,
@@ -83,24 +85,27 @@
    <span class="co">&#39;number&#39;</span>: <span class="dv">189</span>,
    <span class="co">&#39;point_group&#39;</span>: <span class="st">&#39;-6m2&#39;</span>,
    <span class="co">&#39;source&#39;</span>: <span class="st">&#39;spglib&#39;</span>,
-   <span class="co">&#39;symbol&#39;</span>: <span class="st">&#39;P-62m&#39;</span>}}</code></pre>
+   <span class="co">&#39;symbol&#39;</span>: <span class="st">&#39;P-62m&#39;</span>}}</code></pre></div>
 <div class="figure">
 <img src="./fig/json-value.gif" />
+
 </div></li>
 <li><p>A <em>string</em> is a sequence of zero or more Unicode characters, wrapped in double quotes, using backslash escapes. A character is represented as a single character string. A string is very much like a C or Java string.</p>
-<pre class="sourceCode python"><code class="sourceCode python">{<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-2340&#39;</span>,
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">{<span class="st">&#39;material_id&#39;</span>: <span class="st">&#39;mp-2340&#39;</span>,
  <span class="co">&#39;cif&#39;</span>: <span class="st">&quot;#</span><span class="ch">\\</span><span class="st">#CIF1.1</span><span class="ch">\n</span><span class="st">##########################################################################</span><span class="ch">\n</span><span class="st">#               Crystallographic Information Format file </span><span class="ch">\n</span><span class="st">#               Produced by PyCifRW module</span><span class="ch">\n</span><span class="st"># </span><span class="ch">\n</span><span class="st">#  This is a CIF file.  CIF has been adopted by the International</span><span class="ch">\n</span><span class="st">#  Union of Crystallography as the standard for data archiving and </span><span class="ch">\n</span><span class="st">#  transmission.</span><span class="ch">\n</span><span class="st">#</span><span class="ch">\n</span><span class="st">#  For information on this file format, follow the CIF links at</span><span class="ch">\n</span><span class="st">#  http://www.iucr.org</span><span class="ch">\n</span><span class="st">##########################################################################</span><span class="ch">\n\n</span><span class="st">data_Na2O2</span><span class="ch">\n</span><span class="st">_symmetry_space_group_name_H-M          &#39;P 1&#39;</span><span class="ch">\n</span><span class="st">_cell_length_a                          6.27944383</span><span class="ch">\n</span><span class="st">_cell_length_b                          6.27944383387</span><span class="ch">\n</span><span class="st">_cell_length_c                          4.50693686</span><span class="ch">\n</span><span class="st">_cell_angle_alpha                       90.0</span><span class="ch">\n</span><span class="st">_cell_angle_beta                        90.0</span><span class="ch">\n</span><span class="st">_cell_angle_gamma                       120.000000032</span><span class="ch">\n</span><span class="st">_chemical_name_systematic               &#39;Generated by pymatgen&#39;</span><span class="ch">\n</span><span class="st">_symmetry_Int_Tables_number             1</span><span class="ch">\n</span><span class="st">_chemical_formula_structural            Na2O2</span><span class="ch">\n</span><span class="st">_chemical_formula_sum                   &#39;Na6 O6&#39;</span><span class="ch">\n</span><span class="st">_cell_volume                            153.905615363</span><span class="ch">\n</span><span class="st">_cell_formula_units_Z                   3</span><span class="ch">\n</span><span class="st">loop_</span><span class="ch">\n</span><span class="st">  _symmetry_equiv_pos_site_id</span><span class="ch">\n</span><span class="st">  _symmetry_equiv_pos_as_xyz</span><span class="ch">\n</span><span class="st">   1  &#39;x, y, z&#39;</span><span class="ch">\n</span><span class="st"> </span><span class="ch">\n</span><span class="st">loop_</span><span class="ch">\n</span><span class="st">  _atom_site_type_symbol</span><span class="ch">\n</span><span class="st">  _atom_site_label</span><span class="ch">\n</span><span class="st">  _atom_site_symmetry_multiplicity</span><span class="ch">\n</span><span class="st">  _atom_site_fract_x</span><span class="ch">\n</span><span class="st">  _atom_site_fract_y</span><span class="ch">\n</span><span class="st">  _atom_site_fract_z</span><span class="ch">\n</span><span class="st">  _atom_site_attached_hydrogens</span><span class="ch">\n</span><span class="st">  _atom_site_B_iso_or_equiv</span><span class="ch">\n</span><span class="st">  _atom_site_occupancy</span><span class="ch">\n</span><span class="st">   O  O1  1  0.666667  0.333333  0.327586  0  .  1</span><span class="ch">\n</span><span class="st">   O  O2  1  0.666667  0.333333  0.672414  0  .  1</span><span class="ch">\n</span><span class="st">   O  O3  1  0.333333  0.666667  0.672414  0  .  1</span><span class="ch">\n</span><span class="st">   O  O4  1  0.333333  0.666667  0.327586  0  .  1</span><span class="ch">\n</span><span class="st">   O  O5  1  0.000000  0.000000  0.829456  0  .  1</span><span class="ch">\n</span><span class="st">   O  O6  1  0.000000  0.000000  0.170544  0  .  1</span><span class="ch">\n</span><span class="st">   Na  Na7  1  0.000000  0.699801  0.500000  0  .  1</span><span class="ch">\n</span><span class="st">   Na  Na8  1  0.300199  0.300199  0.500000  0  .  1</span><span class="ch">\n</span><span class="st">   Na  Na9  1  0.699801  0.000000  0.500000  0  .  1</span><span class="ch">\n</span><span class="st">   Na  Na10  1  0.000000  0.365556  0.000000  0  .  1</span><span class="ch">\n</span><span class="st">   Na  Na11  1  0.634444  0.634444  0.000000  0  .  1</span><span class="ch">\n</span><span class="st">   Na  Na12  1  0.365556  0.000000  0.000000  0  .  1</span><span class="ch">\n</span><span class="st"> </span><span class="ch">\n</span><span class="st">&quot;</span>,
 
-<span class="co">&#39;doi_bibtex&#39;</span>: <span class="st">&#39;@misc{Kristin Persson_2014, place={United States}, title={Materials Data on Na2O2 (SG:189) by Materials Project}, url={http://www.osti.gov/dataexplorer/servlets/purl/1182584}, DOI={10.17188/1182584}, abstractNote={Computed materials data using density functional theory calculations. These calculations determine the electronic structure of bulk materials by solving approximations to the Schrodinger equation. For more information, see https://materialsproject.org/docs/calculations}, author={Kristin Persson}, year=</span><span class="ot">{2014}</span><span class="st">, month=</span><span class="ot">{Nov}</span><span class="st">}&#39;</span>}</code></pre>
+<span class="co">&#39;doi_bibtex&#39;</span>: <span class="st">&#39;@misc{Kristin Persson_2014, place={United States}, title={Materials Data on Na2O2 (SG:189) by Materials Project}, url={http://www.osti.gov/dataexplorer/servlets/purl/1182584}, DOI={10.17188/1182584}, abstractNote={Computed materials data using density functional theory calculations. These calculations determine the electronic structure of bulk materials by solving approximations to the Schrodinger equation. For more information, see https://materialsproject.org/docs/calculations}, author={Kristin Persson}, year=</span><span class="sc">{2014}</span><span class="st">, month=</span><span class="sc">{Nov}</span><span class="st">}&#39;</span>}</code></pre></div>
 <div class="figure">
 <img src="./fig/json-string.gif" />
+
 </div></li>
 <li><p>A number is very much like a C or Java number, except that the octal and hexadecimal formats are not used. Engineering notation is supported. Non-integers are stored according to the IEEE 754 floating-point standard.</p>
-<pre class="sourceCode python"><code class="sourceCode python">-<span class="dv">1</span>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="op">-</span><span class="dv">1</span>
 <span class="fl">1.6e5</span>
-<span class="fl">1.432e-10</span></code></pre>
+<span class="fl">1.432e-10</span></code></pre></div>
 <div class="figure">
 <img src="./fig/json-number.gif" />
+
 </div></li>
 </ul>
 <p>In Python, built-in data types correspond to those in JSON:</p>
@@ -115,23 +120,23 @@
 </ul>
 <p>Now, let’s explore the mechanics of inserting some (fake) data into our collection. In the process, we’ll see how MongoDB extends JSON to allow representation of data types that are not part of the JSON specification.</p>
 <!-- a subset of https://materialsproject.org/materials/mp-2340/ -->
-<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">from</span> datetime <span class="ch">import</span> datetime
-material = {<span class="st">&quot;fake&quot;</span>: <span class="ot">True</span>,
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">from</span> datetime <span class="im">import</span> datetime
+material <span class="op">=</span> {<span class="st">&quot;fake&quot;</span>: <span class="va">True</span>,
             <span class="co">&quot;elements&quot;</span>: [<span class="st">&quot;Na&quot;</span>, <span class="st">&quot;O&quot;</span>],
             <span class="co">&quot;band_gap&quot;</span>: <span class="fl">1.736</span>,
             <span class="co">&quot;last_updated&quot;</span>: datetime.utcnow(),
             <span class="co">&quot;spacegroup&quot;</span>: {<span class="st">&quot;crystal_system&quot;</span>: <span class="st">&quot;hexagonal&quot;</span>, <span class="st">&quot;number&quot;</span>: <span class="dv">189</span>}}
-result = db.materials.insert_one(material)</code></pre>
+result <span class="op">=</span> db.materials.insert_one(material)</code></pre></div>
 <p>We first create a dictionary to correspond to a JSON object that we will insert as a document into our database collection. Note that we have created a timestamp. Note also that we know nothing about the formatting of other documents in the collection. Do the other documents have a “fake” key? We don’t <em>need</em> to care. This is because MongoDB allows for flexible schema – it won’t complain if some documents contain certain keys and others don’t. In fact, MongoDB has an <code>$exists</code> operator you can use in queries to filter for documents that contain / do not contain a given key. When fetching a key’s value across a set of documents, if certain documents don’t contain the key, the <code>null</code> value (<code>None</code> in Python) will be returned for those documents.</p>
 <p>Let’s inspect the <code>result</code> to get the unique id of the inserted document:</p>
-<pre class="sourceCode python"><code class="sourceCode python">result.inserted_id</code></pre>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result.inserted_id</code></pre></div>
 <pre class="output"><code>ObjectId(&#39;56cb4595a62895f91556937e&#39;)</code></pre>
 <p>What’s interesting is that the id is an object, not simply a JSON string. You can, for instance, ask when it was generated (down to the second):</p>
-<pre class="sourceCode python"><code class="sourceCode python"><span class="dt">print</span>(result.inserted_id.generation_time)</code></pre>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">print</span>(result.inserted_id.generation_time)</code></pre></div>
 <pre class="output"><code>2016-02-22 17:29:57+00:00</code></pre>
 <p>What is going on here? Well, MongoDB uses “Binary JSON” (aka <a href="http://bsonspec.org/">BSON</a>), a binary-encoded serialization of JSON-like documents. This allows it to extend the JSON spec to support a richer set of data types. At the same time, all MongoDB documents are just JSON when in transit. We can use the <code>bson</code> package (included when you install <code>pymongo</code>) to see what’s going on under the hood:</p>
-<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">from</span> bson <span class="ch">import</span> json_util
-<span class="dt">print</span>(json_util.dumps(db.materials.find_one(result.inserted_id), indent=<span class="dv">2</span>))</code></pre>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">from</span> bson <span class="im">import</span> json_util
+<span class="bu">print</span>(json_util.dumps(db.materials.find_one(result.inserted_id), indent<span class="op">=</span><span class="dv">2</span>))</code></pre></div>
 <pre class="output"><code>{
   &quot;elements&quot;: [
     &quot;Na&quot;,
@@ -160,12 +165,12 @@ result = db.materials.insert_one(material)</code></pre>
 </ul>
 <p>This makes it reasonable to create documents in parallel without worrying about race conditions for increment-by-one id strategies. Furthermore, sorting on an <code>_id</code> field that stores ObjectId values is roughly equivalent to sorting by creation time (it’s not strict within a single second).</p>
 <p>Before we move on, let’s delete any/all fake documents in our collection (we’ll go over deletion again later):</p>
-<pre class="sourceCode python"><code class="sourceCode python">result = db.materials.delete_many({<span class="st">&quot;fake&quot;</span>: <span class="ot">True</span>})
-result.deleted_count</code></pre>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result <span class="op">=</span> db.materials.delete_many({<span class="st">&quot;fake&quot;</span>: <span class="va">True</span>})
+result.deleted_count</code></pre></div>
 <pre class="output"><code>1</code></pre>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
-<h2><span class="glyphicon glyphicon-pencil"></span>About those <code>_id</code>s</h2>
+<h2 id="about-those-_ids"><span class="glyphicon glyphicon-pencil"></span>About those <code>_id</code>s</h2>
 </div>
 <div class="panel-body">
 <p>What are some properties of a generated MongoDB document <code>_id</code> (choose zero or more of the following)?</p>
@@ -178,7 +183,7 @@ result.deleted_count</code></pre>
 </section>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
-<h2><span class="glyphicon glyphicon-pencil"></span>Multiple insertion</h2>
+<h2 id="multiple-insertion"><span class="glyphicon glyphicon-pencil"></span>Multiple insertion</h2>
 </div>
 <div class="panel-body">
 <p>What happens when you try to re-create and insert the example (fake) <code>material</code> document again?</p>
@@ -189,8 +194,8 @@ result.deleted_count</code></pre>
       </article>
       <div class="footer">
         <a class="label swc-blue-bg" href="http://software-carpentry.org">Software Carpentry</a>
-        <a class="label swc-blue-bg" href="https://github.com/swcarpentry/lesson-template">Source</a>
-        <a class="label swc-blue-bg" href="mailto:admin@software-carpentry.org">Contact</a>
+        <a class="label swc-blue-bg" href="https://github.com/dwinston/mongo-novice-materials">Source</a>
+        <a class="label swc-blue-bg" href="mailto:dwinston@lbl.gov">Contact</a>
         <a class="label swc-blue-bg" href="LICENSE.html">License</a>
       </div>
     </div>
