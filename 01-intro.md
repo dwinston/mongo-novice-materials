@@ -130,13 +130,12 @@ brew install mongodb
 
 ##### M.1.2 Launch MongoDB
 
-As indicated by `brew`'s report after you install mongodb, run the following
-commands at a terminal prompt to launch the mongodb daemon and ensure it
+Use `brew services` to launch the mongodb daemon (`mongod`) and ensure it
 re-launches if your system restarts:
 
 ~~~ {.command}
-launchctl unload ~/Library/LaunchAgents/homebrew.mxcl.mongodb.plist
-launchctl load ~/Library/LaunchAgents/homebrew.mxcl.mongodb.plist
+brew tap homebrew/services
+brew services restart mongodb
 ~~~
 
 ##### M.1.3 Connect to MongoDB

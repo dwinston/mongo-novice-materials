@@ -91,9 +91,9 @@ db.labs.count()</code></pre></div></li>
 <p>At a <strong>Terminal</strong> prompt,</p>
 <pre class="command"><code>brew install mongodb</code></pre>
 <h5 id="m.1.2-launch-mongodb">M.1.2 Launch MongoDB</h5>
-<p>As indicated by <code>brew</code>’s report after you install mongodb, run the following commands at a terminal prompt to launch the mongodb daemon and ensure it re-launches if your system restarts:</p>
-<pre class="command"><code>launchctl unload ~/Library/LaunchAgents/homebrew.mxcl.mongodb.plist
-launchctl load ~/Library/LaunchAgents/homebrew.mxcl.mongodb.plist</code></pre>
+<p>Use <code>brew services</code> to launch the mongodb daemon (<code>mongod</code>) and ensure it re-launches if your system restarts:</p>
+<pre class="command"><code>brew tap homebrew/services
+brew services restart mongodb</code></pre>
 <h5 id="m.1.3-connect-to-mongodb">M.1.3 Connect to MongoDB</h5>
 <p>Run <code>mongo</code> at a terminal prompt to open a connection to your running server. Type <code>help</code> and hit enter, and you should see a listing of commands. Type <code>exit</code> and hit enter to exit the MongoDB shell.</p>
 <p>Congratulations! You have a running MongoDB server that will be sufficient for the lesson.</p>
