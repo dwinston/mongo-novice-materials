@@ -15,7 +15,7 @@ Use the `aggregate()` method to perform a stage-based aggregation. The `aggregat
 
     db.collection.aggregate([<stage1>, <stage2>, ...])
 
-Use the `$group` stage to group by a specified key. In the `$group` stage, specify the group by key in the `_id` field. `$group` accesses fields by the field path, which is the field name prefixed by a dollar sign **$**. The `$group` stage can use accumulators to perform calculations for each group. The following example groups the documents in the **materials** collection by the **nelements** field and uses the $sum accumulator to count the documents for each group.
+Use the `$group` stage to group by a specified key. In the `$group` stage, specify the group by key in the `_id` field. `$group` accesses fields by the field path, which is the field name prefixed by a dollar sign **\$**. The `$group` stage can use accumulators to perform calculations for each group. The following example groups the documents in the **materials** collection by the **nelements** field and uses the $sum accumulator to count the documents for each group.
 
 ~~~ {.python}
 cursor = db.materials.aggregate(
