@@ -35,10 +35,7 @@ compounds.
 
 > ## Prerequisites {.prereq}
 >
-> There are no strict prerequisites. The following would be helpful:
->
 > * Familiarity with the command line, for running a mongo server locally and importing data.
-> * Familiarity with programming in Python, for learning commands using the `mongomock` (if no server is available) or `pymongo` packages.
 
 > ## Getting ready {.getready}
 >
