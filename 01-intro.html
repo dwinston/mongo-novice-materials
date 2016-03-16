@@ -35,110 +35,35 @@
 </div>
 <div class="panel-body">
 <ul>
-<li>Ensure participants have a running local mongodb, the sample data, and an open notebook</li>
-<li>Introduce the Jupyter Notebook environment</li>
+<li>Ensure participants have a running local mongod, the sample data, and an open mongo shell</li>
 </ul>
 </div>
 </section>
-<h3 id="setup-for-windows">Setup for Windows</h3>
-<h4 id="w.1-mongodb">W.1 MongoDB</h4>
-<p>Full setup instructions are at <a href="https://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/" class="uri">https://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/</a>.</p>
-<h5 id="w.1.1-determine-which-mongodb-you-need-download-it-and-install-it">W.1.1 Determine which MongoDB you need, download it, and install it</h5>
-<ol style="list-style-type: decimal">
-<li>Go to <a href="https://www.mongodb.org/downloads" class="uri">https://www.mongodb.org/downloads</a> and download the MSI installer. <a href="https://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/#determine-which-mongodb-build-you-need">This section</a> of the above installation tutorial walks through how to determine which version of the installer will be best for your system.</li>
-<li>Run the installer, accept the license, and choose a “Complete” installation.</li>
-</ol>
-<h5 id="w.1.2-set-up-the-mongodb-environment">W.1.2 Set up the MongoDB environment</h5>
-<p>Once, installed, open a <strong>Command Prompt</strong> and type in</p>
+<h2 id="setup-for-windows">Setup for Windows</h2>
+<p>Go to <a href="https://www.mongodb.org/downloads" class="uri">https://www.mongodb.org/downloads</a> and download the MSI installer. The <a href="https://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/#determine-which-mongodb-build-you-need">official installation tutorial</a> walks through how to determine which version of the installer will be best for your system. Run the installer, accept the license, and choose a “Complete” installation.</p>
+<p>Once, installed, open a <strong>Powershell</strong> window and type in</p>
 <pre class="command"><code>md \data\db</code></pre>
-<p>to create the default data directory for MongoDB to use on your system. Then, start the server (called the <strong>mongo</strong> <strong>d</strong>aemon) by typing in</p>
-<pre class="command"><code>&quot;C:\Program Files\MongoDB\Server\3.2\bin\mongod.exe&quot;</code></pre>
-<p>or whatever the path is to where you have MongoDB installed. If you get an error when running <code>mongod.exe</code>, you may have to specify another storage engine:</p>
-<pre class="command"><code>&quot;C:\Program Files\MongoDB\Server\3.2\bin\mongod.exe&quot; --storageEngine=mmapv1</code></pre>
-<h5 id="w.1.3-connect-to-mongodb">W.1.3 Connect to MongoDB</h5>
-<p>Open <em>another</em> <strong>Command Prompt</strong> window, and this time call <code>mongo.exe</code> (no <strong>d</strong> at the end) to open a connection to your running server:</p>
-<pre class="command"><code>&quot;C:\Program Files\MongoDB\Server\3.2\bin\mongo.exe&quot;</code></pre>
+<p>to create the default data directory for MongoDB to use on your system. Then, add the MongoDB <strong>bin</strong>ary files directory to your Path environment by typing in</p>
+<pre class="command"><code>$env:Path += &quot;;C:\Program Files\MongoDB\Server\3.2\bin&quot;</code></pre>
+<p>and then start the server (called the <strong>mongo</strong> <strong>d</strong>aemon) by typing in</p>
+<pre class="command"><code>mongod</code></pre>
+<p>Now, open <em>another</em> <strong>Powershell</strong> window, and this time call <code>mongo</code> (no <strong>d</strong> at the end) to open a connection to your running server:</p>
+<pre class="command"><code>$env:Path += &quot;;C:\Program Files\MongoDB\Server\3.2\bin&quot;
+mongo</code></pre>
 <p>Type <code>help</code> and hit enter, and you should see a listing of commands. Type <code>exit</code> and hit enter to exit the MongoDB shell and return to your Windows command prompt.</p>
-<p>Congratulations! You have a running MongoDB server that will be sufficient for the lesson.</p>
-<h4 id="w.2-python-and-interactive-notebooks">W.2 Python and Interactive Notebooks</h4>
-<h5 id="w.2.1-install-anaconda">W.2.1 Install Anaconda</h5>
-<p>Go to <a href="https://www.continuum.io/downloads#_windows" class="uri">https://www.continuum.io/downloads#_windows</a> to download and install Anaconda for Windows, the Python 3.5 version. This will give you an <em>isolated</em> installation that you can use in this lesson and beyond. It’s isolated because all files will be in a single folder – no existing or future Python environments on your system will be affected, and you can delete it all at any time by simply deleting the folder.</p>
-<h5 id="w.2.2-install-extra-packages-used-by-this-lesson">W.2.2 Install extra packages used by this lesson</h5>
-<p>Open <strong>Anaconda Prompt</strong> (there should be a link in your Start Menu) and</p>
-<pre class="command"><code>pip install mongomock
-pip install pymongo</code></pre>
-<p>to install the <code>mongomock</code> and <code>pymongo</code> packages. Now, you can close the Anaconda Prompt window and open <strong>Jupyter Notebook</strong>. This will start a notebook server and open its interface in your web browser.</p>
-<h5 id="w.2.3-connect-to-mongodb-through-python">W.2.3 Connect to MongoDB through Python</h5>
-<p>Now, Let’s work on your Desktop and test your local MongoDB connection.</p>
-<ol style="list-style-type: decimal">
-<li>Click the <code>Desktop</code> link in the directory listing</li>
-<li>Click on the <code>New</code> dropdown at the upper right and select <code>Python 3</code>.</li>
-<li><p>In the cell, put in the following lines:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">from</span> pymongo <span class="im">import</span> MongoClient
-client <span class="op">=</span> MongoClient()
-db <span class="op">=</span> client.swc_lbl
-db.labs.insert_one({<span class="st">&quot;name&quot;</span>: <span class="st">&quot;LBL&quot;</span>})
-db.labs.count()</code></pre></div></li>
-</ol>
-<p>and run qthe cell. If the output is <code>1</code> (or just not an error; if you run it multiple times, the count will keep going up!), then you should be good to go for the lesson! Congratulations!</p>
-<h3 id="setup-for-mac-os-x">Setup for Mac OS X</h3>
-<h4 id="m.1-mongodb">M.1 MongoDB</h4>
+<h2 id="setup-for-mac-os-x">Setup for Mac OS X</h2>
 <p><a href="http://brew.sh/">Homebrew</a>, “the missing package manager for OS X”, installs binary packages based on published “formulae”. To install, open a <strong>Terminal</strong> window and enter (one line)</p>
 <pre class="command"><code>/usr/bin/ruby -e &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&quot;</code></pre>
 <p>and if you already have <code>brew</code> installed, run <code>brew update</code> to update your installation’s package database.</p>
 <p>To install the MongoDB binaries, run the following:</p>
-<h5 id="m.1.1-download-and-install-mongodb">M.1.1 Download and install MongoDB</h5>
 <p>At a <strong>Terminal</strong> prompt,</p>
 <pre class="command"><code>brew install mongodb</code></pre>
-<h5 id="m.1.2-launch-mongodb">M.1.2 Launch MongoDB</h5>
 <p>Use <code>brew services</code> to launch the mongodb daemon (<code>mongod</code>) and ensure it re-launches if your system restarts:</p>
 <pre class="command"><code>brew tap homebrew/services
 brew services restart mongodb</code></pre>
-<h5 id="m.1.3-connect-to-mongodb">M.1.3 Connect to MongoDB</h5>
 <p>Run <code>mongo</code> at a terminal prompt to open a connection to your running server. Type <code>help</code> and hit enter, and you should see a listing of commands. Type <code>exit</code> and hit enter to exit the MongoDB shell.</p>
-<p>Congratulations! You have a running MongoDB server that will be sufficient for the lesson.</p>
-<h4 id="m.2-python-and-interactive-notebooks">M.2 Python and Interactive Notebooks</h4>
-<h5 id="m.2.1-install-anaconda">M.2.1 Install Anaconda</h5>
-<p>Go to <a href="https://www.continuum.io/downloads#_macosx" class="uri">https://www.continuum.io/downloads#_macosx</a> to download and install Anaconda for OS X, the Python 3.5 version. This will give you an <em>isolated</em> installation that you can use in this lesson and beyond. It’s isolated because all files will be in a single folder – no existing or future Python environments on your system will be affected, and you can delete it all at any time by simply deleting the folder.</p>
-<h5 id="m.2.2-install-extra-packages-used-by-this-lesson">M.2.2 Install extra packages used by this lesson</h5>
-<p>At your terminal prompt, prepend Anaconda’s binaries to your PATH for the current terminal window by entering the following (replacing <code>jdoe</code> with your username):</p>
-<pre class="command"><code>export PATH=&quot;/Users/jdoe/anaconda/bin:$PATH&quot;</code></pre>
-<p>This assumes you installed Anaconda to the <code>anaconda</code> folder in your home directory (the default). It’s possible the Anaconda installer already added a line to the end of your <code>~/.bash_profile</code> file to do this automatically every time you open a terminal prompt.</p>
-<p>Ensure that when you type <code>python</code> at the prompt, “Python 3.5” and “Anaconda” appears in the first line of output. Enter <code>exit()</code> to enter the Python session. Next, enter the commands</p>
-<pre class="command"><code>pip install mongomock
-pip install pymongo</code></pre>
-<p>to install the <code>mongomock</code> and <code>pymongo</code> packages. Finally, enter <code>jupyter notebook</code> at the prompt. This will start a notebook server and open its interface in your web browser.</p>
-<h5 id="m.2.3-connect-to-mongodb-through-python">M.2.3 Connect to MongoDB through Python</h5>
-<p>Now, Let’s work on your Desktop and test your local MongoDB connection.</p>
-<ol style="list-style-type: decimal">
-<li>Click the <code>Desktop</code> link in the directory listing</li>
-<li>Click on the <code>New</code> dropdown at the upper right and select <code>Python 3</code>.</li>
-<li><p>In the cell, put in the following lines:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">from</span> pymongo <span class="im">import</span> MongoClient
-client <span class="op">=</span> MongoClient()
-db <span class="op">=</span> client.swc_lbl
-db.labs.insert_one({<span class="st">&quot;name&quot;</span>: <span class="st">&quot;LBL&quot;</span>})
-db.labs.count()</code></pre></div></li>
-</ol>
-<p>and run the cell. If the output is <code>1</code> (or just not an error; if you run it multiple times, the count will keep going up!), then you should be good to go for the lesson! Congratulations!</p>
-<h3 id="setup-for-linux">Setup for Linux</h3>
-<p>The procedure maps more or less to that for Mac OS X above. Consult <a href="https://docs.mongodb.org/manual/administration/install-on-linux/" class="uri">https://docs.mongodb.org/manual/administration/install-on-linux/</a> for MongoDB setup intructions particular to your flavor of Linux, use the Linux installer for Anaconda, and ensure everything works as described in the Mac OS X instructions above.</p>
-<section class="challenge panel panel-success">
-<div class="panel-heading">
-<h2 id="tour-the-jupyter-interface"><span class="glyphicon glyphicon-pencil"></span>Tour the Jupyter Interface</h2>
-</div>
-<div class="panel-body">
-<p>Go to Help-&gt;User Interface Tour in your open Jupyter notebook to learn about the interface.</p>
-</div>
-</section>
-<section class="challenge panel panel-success">
-<div class="panel-heading">
-<h2 id="learn-a-few-jupyter-keyboard-shortcuts"><span class="glyphicon glyphicon-pencil"></span>Learn a few Jupyter Keyboard Shortcuts</h2>
-</div>
-<div class="panel-body">
-<p>Go to Help-&gt;Keyboard Shortcuts in an open Jupyter notebook. Practice running cells, inserting cells, and switching between Code and Markdown modes.</p>
-</div>
-</section>
+<h2 id="setup-for-linux">Setup for Linux</h2>
+<p>The procedure maps more or less to that for Mac OS X above. Consult <a href="https://docs.mongodb.org/manual/administration/install-on-linux/" class="uri">https://docs.mongodb.org/manual/administration/install-on-linux/</a> for MongoDB setup intructions particular to your flavor of Linux, and ensure everything works as described in the Mac OS X instructions.</p>
         </div>
       </div>
       </article>
