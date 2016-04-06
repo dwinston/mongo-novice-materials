@@ -40,72 +40,105 @@
 </ul>
 </div>
 </section>
-<p>You can use the <code>update_one()</code> and the <code>update_many()</code> methods to update documents of a collection. The <code>update_one()</code> method updates a single document. Use <code>update_many()</code> to update all documents that match the criteria. The methods accept the following parameters:</p>
+<p>You can use the <code>update()</code> method to update documents of a collection. The <code>update()</code> method updates a single document by default. You can update all documents that match your criteria by passing an extra parameter. <code>update()</code> accept the following parameters:</p>
 <ul>
 <li>a filter document to match the documents to update,</li>
 <li>an update document to specify the modification to perform, and</li>
-<li>an optional <code>upsert</code> parameter.</li>
+<li>an options document setting parameters such as <code>upsert</code> and <code>multi</code>.</li>
 </ul>
 <p>To change a field value, MongoDB provides <a href="http://docs.mongodb.org/manual/reference/operator/update">update operators</a> to modify values. Some update operators, such as <code>$set</code>, will create the field if the field does not exist.</p>
-<p>The following operation updates the first document in the <strong>Cu-F</strong> chemical system (<strong>chemsys</strong>), using the <code>$set</code> operator to update the <strong>tags</strong> field and the <code>$currentDate</code> operator to update the <strong>lastModified</strong> field with the current date.</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result <span class="op">=</span> db.materials.update_one(
-    {<span class="st">&quot;chemsys&quot;</span>: <span class="st">&quot;Cu-F&quot;</span>},
+<p>The following operation updates the first document in the Copper-Fluorine (<strong>Cu-F</strong>) chemical system (<strong>chemsys</strong>), using the <code>$set</code> operator to update the <strong>tags</strong> field and the <code>$currentDate</code> operator to update the <strong>lastModified</strong> field with the current date.</p>
+<pre><code>db.materials.update(
+    {chemsys: &quot;Cu-F&quot;},
     {
-        <span class="st">&quot;$set&quot;</span>: {
-            <span class="st">&quot;tags&quot;</span>: [<span class="st">&quot;halide&quot;</span>]
+        $set: {
+            tags: [&quot;halide&quot;]
         },
-        <span class="co">&quot;$currentDate&quot;</span>: {<span class="st">&quot;lastModified&quot;</span>: <span class="va">True</span>}
+        $currentDate: {lastModified: true}
     }
-)</code></pre></div>
-<p>The object returned reports the count of documents matched and modified:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result.matched_count</code></pre></div>
-<pre class="output"><code>1</code></pre>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result.modified_count</code></pre></div>
-<pre class="output"><code>1</code></pre>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">db.materials.find_one({<span class="st">&quot;chemsys&quot;</span>: <span class="st">&quot;Cu-F&quot;</span>},
-                      {<span class="st">&quot;tags&quot;</span>: <span class="dv">1</span>, <span class="st">&quot;lastModified&quot;</span>: <span class="dv">1</span>, <span class="st">&quot;material_id&quot;</span>: <span class="dv">1</span>})</code></pre></div>
-<pre class="output"><code>{&#39;_id&#39;: ObjectId(&#39;56ced2fb7943f6405b32a0b6&#39;),
- &#39;lastModified&#39;: datetime.datetime(2016, 2, 25, 10, 10, 7, 525000),
- &#39;material_id&#39;: &#39;mp-1229&#39;,
- &#39;tags&#39;: [&#39;halide&#39;]}</code></pre>
+)</code></pre>
+<pre class="output"><code>WriteResult({ &quot;nMatched&quot; : 1, &quot;nUpserted&quot; : 0, &quot;nModified&quot; : 1 })</code></pre>
+<p>The object returned reports the count of documents matched and modified.</p>
+<pre><code>db.materials.findOne({chemsys: &quot;Cu-F&quot;}, {tags: 1, lastModified: 1, material_id: 1})</code></pre>
+<pre class="output"><code>{
+    &quot;_id&quot; : ObjectId(&quot;5703e9efbd8ea237cdacea45&quot;),
+    &quot;material_id&quot; : &quot;mp-1229&quot;,
+    &quot;tags&quot; : [
+        &quot;halide&quot;
+    ],
+    &quot;lastModified&quot; : ISODate(&quot;2016-04-05T20:33:44.917Z&quot;)
+}</code></pre>
 <p>To update an embedded field, use the dot notation:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result <span class="op">=</span> db.materials.update_one(
-    {<span class="st">&quot;material_id&quot;</span>: <span class="st">&quot;mp-1229&quot;</span>},
-    {<span class="st">&quot;$set&quot;</span>: {<span class="st">&quot;elasticity.calculations.source&quot;</span>: <span class="st">&quot;Private communication&quot;</span>}}
-)
-
-<span class="bu">print</span>(result.matched_count, result.modified_count)</code></pre></div>
-<pre class="output"><code>1 1</code></pre>
-<p>The <code>update_one()</code> method updates a single document. To update multiple documents, use the <code>update_many()</code> method. Let’s tag all of the halides, where a halide is a binary compounds for which one part is a halogen atom and the other part is an element that is less electronegative than the halogen. Specifically, we will use the <code>$addToSet</code> update operator to add “halide” idempotently to a compound’s <strong>tags</strong> array, creating the array if it does not exist.</p>
-<p>First, let’s generate a list of halide chemical systems. The <a href="http://pymatgen.org/">pymatgen</a> Python package includes a JSON file, a copy of which you downloaded earlier, with basic information on chemical elements, including Pauling electronegativity (“X”) if known. Let’s load it as a new MongoDB collection:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">import</span> json
-
-db.elements.drop() <span class="co"># If it exists, clear it</span>
-<span class="cf">with</span> <span class="bu">open</span>(<span class="st">&#39;data/periodic_table.json&#39;</span>) <span class="im">as</span> f:
-    <span class="cf">for</span> symbol, rest <span class="op">in</span> json.load(f).items():
-        doc <span class="op">=</span> {<span class="st">&quot;Symbol&quot;</span>: symbol}
-        doc.update(rest)
-        db.elements.insert_one(doc)</code></pre></div>
-<p>Now, let’s use our new collection to write a generator for halide systems. The <strong>chemsys</strong> values in our materials collection are sorted alphabetically, i.e. we say “Cu-F” rather than “F-Cu”, so we have to account for that. You are not expected to know the Python syntax for doing this – the point here is to demonstrate how a JSON data source can quickly be ingested by MongoDB and how what you’ve learned so far about query operators can be used effectively to find what we need from the data.</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">halogens <span class="op">=</span> [<span class="st">&quot;F&quot;</span>, <span class="st">&quot;Cl&quot;</span>, <span class="st">&quot;Br&quot;</span>, <span class="st">&quot;I&quot;</span>, <span class="st">&quot;At&quot;</span>]
-<span class="kw">def</span> halide_systems():
-    <span class="cf">for</span> halogen <span class="op">in</span> halogens:
-        X <span class="op">=</span> db.elements.find_one({<span class="st">&quot;Symbol&quot;</span>: halogen})[<span class="st">&quot;X&quot;</span>]
-        <span class="cf">for</span> doc <span class="op">in</span> db.elements.find({<span class="st">&quot;X&quot;</span>: {<span class="st">&quot;$lt&quot;</span>: X}}):
-            <span class="cf">yield</span> <span class="st">&quot;-&quot;</span>.join(<span class="bu">sorted</span>([doc[<span class="st">&quot;Symbol&quot;</span>], halogen]))</code></pre></div>
-<p>To demonstrate use of the generator let’s see which systems contain copper:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">[s <span class="cf">for</span> s <span class="op">in</span> <span class="bu">list</span>(halide_systems()) <span class="cf">if</span> <span class="st">&#39;Cu&#39;</span> <span class="op">in</span> s]</code></pre></div>
-<pre class="output"><code>[&#39;Cu-F&#39;, &#39;Cl-Cu&#39;, &#39;Br-Cu&#39;, &#39;Cu-I&#39;, &#39;At-Cu&#39;]</code></pre>
+<pre><code>db.materials.update(
+    {material_id: &quot;mp-1229&quot;},
+    {$set: {&quot;elasticity.calculations.source&quot;: &quot;Private communication&quot;}}
+)</code></pre>
+<pre class="output"><code>WriteResult({ &quot;nMatched&quot; : 1, &quot;nUpserted&quot; : 0, &quot;nModified&quot; : 1 })</code></pre>
+<aside class="callout panel panel-info">
+<div class="panel-heading">
+<h2 id="replacing-a-document-versus-updating-fields"><span class="glyphicon glyphicon-pushpin"></span>Replacing a document versus updating fields</h2>
+</div>
+<div class="panel-body">
+<p>You must use <code>$set</code> to merely update fields but retain the rest of a document. The command</p>
+<pre><code>db.materials.update(
+   {material_id: &quot;mp-1229&quot;},
+   {&quot;elasticity.calculations.source&quot;: &quot;Private communication&quot;}
+)</code></pre>
+<p>will <em>replace</em> the matched document with the object given as the second argument (the <code>_id</code> will be the same as that of the matched document).</p>
+</div>
+</aside>
+<p>The <code>update()</code> method updates a single document by default. To update multiple documents, pass <code>{multi: true}</code> as the third argument to <code>update()</code>. Let’s tag all of the halides, where a halide is a two-element compound for which one part is a halogen atom and the other part is an element that is less electronegative than the halogen. Specifically, we will use the <code>$addToSet</code> update operator to add “halide” without duplication to a compound’s <strong>tags</strong> array, creating the array if it does not exist.</p>
+<p>First, let’s generate a list of halide chemical systems. The <a href="http://pymatgen.org/">pymatgen</a> Python package includes a JSON file, a copy of which you downloaded earlier, with basic information on chemical elements, including Pauling electronegativity (“X”) if known. Let’s load it into a new collection in our database:</p>
+<pre><code>exit</code></pre>
+<pre class="output"><code>bye</code></pre>
+<pre><code># After exiting the mongo shell:
+mongoimport periodic_table.json --db swc --collection periodic_tables</code></pre>
+<pre class="output"><code>connected to: localhost
+imported 1 document</code></pre>
+<pre><code># Re-enter the mongo shell:
+mongo</code></pre>
+<pre class="output"><code>MongoDB shell version: 3.2.3
+connecting to: test</code></pre>
+<pre><code>use swc</code></pre>
+<pre class="output"><code>switched to db swc</code></pre>
+<p>The file contains a single object, where keys are chemical element symbols (e.g. “H” for hydrogen) and values are data for the corresponding element. Thus, we loaded it into a “periodic_tables” collection. Now, we need to do a bit of transformation to map the periodic table to a MongoDB collection of elements:</p>
+<pre><code>db.elements.drop(); // If it exists, drop it
+pt = db.periodic_tables.findOne();
+Object.keys(pt).forEach(function (symbol) {
+  if (symbol === &#39;_id&#39;) return;
+  doc = {symbol: symbol};
+  Object.assign(doc, pt[symbol]);
+  db.elements.insert(doc);
+});</code></pre>
+<p>If we added the lines <code>conn = new Mongo();</code> and <code>db = conn.getDB(&quot;swc&quot;);</code> to the top of the last block, and saved it all to a file (e.g. “makeElementsCollection.js”), we could then call <code>load(&quot;makeElementsCollection.js&quot;)</code> from within the <code>mongo</code> shell to execute the script and get the same result.</p>
+<p>Now, let’s use our new collection to define a function that returns a list of halide chemical systems. The <strong>chemsys</strong> values in our materials collection are sorted alphabetically, i.e. we say “Cu-F” rather than “F-Cu”, so we have to account for that. You are not expected to know the Javascript syntax for doing this – the point here is to demonstrate how a JSON data source can quickly be ingested by MongoDB and how what you’ve learned so far about query operators can be used effectively to find what we need from the data. You can do something similar using your programming language of choice; Javascript is convenient here because an interpreter for that language is built into the mongo shell. You can copy-paste the following into your shell:</p>
+<pre><code>halogens = [&quot;F&quot;, &quot;Cl&quot;, &quot;Br&quot;, &quot;I&quot;, &quot;At&quot;]
+function lessElectronegBinaries (symbols) {
+  var elements = symbols.map(function (s) {
+    return db.elements.findOne({symbol: s});
+  });
+  var systems = [];
+  elements.forEach(function (elt) {
+    db.elements.find({X: {$lt: elt.X}}).forEach(function (other) {
+      systems.push([elt.symbol, other.symbol].sort().join(&quot;-&quot;));
+    });
+  });
+  return systems;
+};</code></pre>
+<p>To demonstrate use of the function let’s see which systems contain copper:</p>
+<pre><code>lessElectronegBinaries(halogens).filter(function (h) {
+    return h.indexOf(&quot;Cu&quot;) !== -1;
+})</code></pre>
+<pre class="output"><code>[ &quot;Cu-F&quot;, &quot;Cl-Cu&quot;, &quot;Br-Cu&quot;, &quot;Cu-I&quot;, &quot;At-Cu&quot; ]</code></pre>
 <p>Now, we’re ready for the show. We use the <code>$in</code> query operator to test for membership of a compound’s <strong>chemsys</strong> in our list of halide systems:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result <span class="op">=</span> db.restaurants.update_many(
-    {<span class="st">&quot;chemsys&quot;</span>: {<span class="st">&quot;$in&quot;</span>: <span class="bu">list</span>(halide_systems())}},
-    {<span class="st">&quot;$addToSet&quot;</span>: {<span class="st">&quot;tags&quot;</span>: <span class="st">&quot;halide&quot;</span>}}
-)</code></pre></div>
-<p>What’s the damage?</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result.matched_count, result.modified_count</code></pre></div>
-<pre class="output"><code>(1127, 1127)</code></pre>
-<p>It looks like we have 1127 halides in our materials collection. Equivalently,</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">db.materials.find({<span class="st">&quot;tags&quot;</span>: <span class="st">&quot;halide&quot;</span>}).count()</code></pre></div>
+<pre><code>db.materials.update(
+    {chemsys: {$in: lessElectronegBinaries(halogens)}},
+    {$addToSet: {tags: &quot;halide&quot;}},
+    {multi: true}
+)</code></pre>
+<pre class="output"><code>WriteResult({ &quot;nMatched&quot; : 1127, &quot;nUpserted&quot; : 0, &quot;nModified&quot; : 1126 })</code></pre>
+<p>It looks like we have 1127 halides in our materials collection, and we modified all but one of them (the “Cu-F” document we updated manually earlier) with the <code>update()</code> operation. Confirming:</p>
+<pre><code>db.materials.find({&quot;tags&quot;: &quot;halide&quot;}).count()</code></pre>
 <pre class="output"><code>1127</code></pre>
 <aside class="callout panel panel-info">
 <div class="panel-heading">
@@ -115,33 +148,25 @@ db.elements.drop() <span class="co"># If it exists, clear it</span>
 <p>In MongoDB, write operations are atomic on the level of a single document. If a single update operation modifies multiple documents of a collection, the operation can interleave with other write operations on that collection.</p>
 </div>
 </aside>
-<aside class="callout panel panel-info">
-<div class="panel-heading">
-<h2 id="replacing-documents"><span class="glyphicon glyphicon-pushpin"></span>Replacing Documents</h2>
-</div>
-<div class="panel-body">
-<p>To replace an entire document (except for the <code>_id</code> field), <code>replace_one()</code> is similar to <code>update_one()</code> except that you pass an entirely new document as the second argument. The replacement document can have different fields from the original document. In the replacement document, you can omit the <code>_id</code> field because the <code>_id</code> field is immutable. If you do include the <code>_id</code> field, it must be the same value as the existing value.</p>
-</div>
-</aside>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
 <h2 id="upsert"><span class="glyphicon glyphicon-pencil"></span>Upsert</h2>
 </div>
 <div class="panel-body">
-<p>What is the result (<code>matched_count</code> and <code>modified_count</code>) of</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result <span class="op">=</span> db.materials.update_one(
-   {<span class="st">&quot;material_id&quot;</span>: <span class="st">&quot;mp-NaN&quot;</span>},
-   {<span class="st">&quot;$set&quot;</span>: {<span class="st">&quot;elasticity.calculations.source&quot;</span>: <span class="st">&quot;Private communication&quot;</span>}}
-)</code></pre></div>
+<p>What is the result of</p>
+<pre><code>db.materials.update(
+   {material_id: &quot;mp-NaN&quot;},
+   {$set: {&quot;elasticity.calculations.source&quot;: &quot;Private communication&quot;}}
+)</code></pre>
 <p>? What does</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">db.materials.find_one({<span class="st">&quot;material_id&quot;</span>: <span class="st">&quot;mp-NaN&quot;</span>})</code></pre></div>
+<pre><code>db.materials.findOne({material_id: &quot;mp-NaN&quot;})</code></pre>
 <p>return? What is the result of</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result <span class="op">=</span> db.materials.update_one(
-   {<span class="st">&quot;material_id&quot;</span>: <span class="st">&quot;mp-NaN&quot;</span>},
-   {<span class="st">&quot;$set&quot;</span>: {<span class="st">&quot;elasticity.calculations.source&quot;</span>: <span class="st">&quot;Private communication&quot;</span>}},
-   upsert<span class="op">=</span><span class="va">True</span>
-)</code></pre></div>
-<p>? What does the <strong>upsert</strong> keyword argument do? Check out other attributes of <code>result</code>.</p>
+<pre><code>db.materials.update(
+   {material_id: &quot;mp-NaN&quot;},
+   {$set: {&quot;elasticity.calculations.source&quot;: &quot;Private communication&quot;}},
+   {upsert: true}
+)</code></pre>
+<p>? What does the <strong>upsert</strong> parameter do?</p>
 </div>
 </section>
 <section class="challenge panel panel-success">
@@ -149,7 +174,7 @@ db.elements.drop() <span class="co"># If it exists, clear it</span>
 <h2 id="hows-your-phase-change-memory"><span class="glyphicon glyphicon-pencil"></span>How’s Your Phase-change Memory?</h2>
 </div>
 <div class="panel-body">
-<p>A chalcogenide is a chemical compound consisting of at least one chalcogen anion (commonly restricted to ‘S’, ‘Se’, or ‘Te’) and at least one more electropositive element. Modify the <code>halide_systems</code> generator we wrote and use <code>update_many()</code> to ensure a “chalcogenide” tag for all binary chalcogenides.</p>
+<p>A chalcogenide is a chemical compound consisting of at least one chalcogen anion (commonly restricted to ‘S’, ‘Se’, or ‘Te’) and at least one less electronegative element. Use the <code>lessElectronegBinaries</code> function we defined earlier and <code>db.materials.update</code> to ensure a “chalcogenide” tag for all binary (two-element) chalcogenides.</p>
 </div>
 </section>
         </div>

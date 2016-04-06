@@ -37,72 +37,48 @@
 <ul>
 <li>Remove documents that match a condition, or all documents</li>
 <li>Drop a collection</li>
-<li>Connect to a real database using <code>pymongo</code></li>
 <li>Restore example data from the command line using <code>mongoimport</code></li>
 <li><code>mongoimport</code> expects one document per line (<strong>not</strong> a valid JSON file)</li>
 </ul>
 </div>
 </section>
-<p>You can use the <code>delete_one()</code> method and the <code>delete_many()</code> method to remove documents from a collection. The method takes a conditions document that determines the documents to remove. To specify a remove condition, use the same structure and syntax as the query conditions.</p>
+<p>You can use the <code>remove()</code> method to remove documents from a collection. The method takes a conditions document that determines the documents to remove. To specify a remove condition, use the same structure and syntax as the query conditions.</p>
 <p>Let’s remove the fake material we may have upserted during a recent exercise:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result <span class="op">=</span> db.materials.delete_many({<span class="st">&quot;material_id&quot;</span>: <span class="st">&quot;mp-NaN&quot;</span>})</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result.deleted_count</code></pre></div>
-<pre class="output"><code>1</code></pre>
+<pre><code>db.materials.remove({material_id: &quot;mp-NaN&quot;})</code></pre>
+<pre class="output"><code>WriteResult({ &quot;nRemoved&quot; : 1 })</code></pre>
 <p>Let’s proceed to destroy our materials collection (dont’ worry – we’ll reload everything at the beginning of the next topic).</p>
-<p>First, let’s delete all elemental compounts:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result <span class="op">=</span> db.materials.delete_many({<span class="st">&quot;nelements&quot;</span>: <span class="dv">1</span>})</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result.deleted_count</code></pre></div>
-<pre class="output"><code>419</code></pre>
+<p>First, let’s delete all one-element compounts:</p>
+<pre><code>db.materials.remove({&quot;nelements&quot;: 1})</code></pre>
+<pre class="output"><code>WriteResult({ &quot;nRemoved&quot; : 419 })</code></pre>
 <p>We’re impatient. Let’s just remove everything by specifying an empty conditions document:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result <span class="op">=</span> db.materials.delete_many({})</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">result.deleted_count</code></pre></div>
-<pre class="output"><code>65721</code></pre>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">db.materials.count()</code></pre></div>
+<pre><code>db.materials.remove({})</code></pre>
+<pre class="output"><code>WriteResult({ &quot;nRemoved&quot; : 65721 })</code></pre>
+<pre><code>db.materials.count()</code></pre>
 <pre class="output"><code>0</code></pre>
 <p>I’m glad we have a backup!</p>
-<p>The remove all operation only removes the documents from the collection. The collection itself, as well as any indexes for the collection (we’ll go over indexes later), remain. To remove all documents from a collection, it may be more efficient to drop the entire collection, including the indexes, and then recreate the collection and rebuild the indexes. Use the drop() method to drop a collection, including any indexes.</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">db.materials.drop()</code></pre></div>
+<p>The <code>remove()</code> operation only removes the documents from the collection. The collection itself, as well as any indexes for the collection (we’ll go over indexes later), remain. To remove all documents from a collection, it may be more efficient to drop the entire collection, including the indexes, and then recreate the collection and rebuild the indexes. Use the drop() method to drop a collection, including any indexes.</p>
+<pre><code>db.materials.drop()</code></pre>
+<pre class="output"><code>true</code></pre>
 <aside class="callout panel panel-info">
 <div class="panel-heading">
 <h2 id="trust-but-verify"><span class="glyphicon glyphicon-pushpin"></span>Trust but Verify</h2>
 </div>
 <div class="panel-body">
-<p>This should go without saying, but it’s a good idea to pass any <code>delete_many()</code> conditions document to a <code>find()</code> first to be sure what you want to remove is what MongoDB thinks you want to remove!</p>
+<p>This should go without saying, but it’s a good idea to pass any <code>remove()</code> conditions document to a <code>find()</code> first to be sure what you want to remove is what MongoDB thinks you want to remove!</p>
 </div>
 </aside>
 <h3 id="reimporting-your-data">(Re)Importing Your Data</h3>
-<p>If you are using <code>mongomock</code> (or even if you are connecting to a real database using <code>pymongo</code>), you can load the JSON data file and <code>insert_many()</code> as before:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">import</span> json
-<span class="im">from</span> mongomock <span class="im">import</span> MongoClient
-<span class="co">#from pymongo import MongoClient</span>
-
-<span class="kw">def</span> reset_materials():
-    client <span class="op">=</span> MongoClient()
-    db <span class="op">=</span> client.swc
-    db.materials.drop()
-    <span class="cf">with</span> <span class="bu">open</span>(<span class="st">&#39;data/mongo-novice-materials.json&#39;</span>) <span class="im">as</span> f:
-        db.materials.insert_many(json.load(f))</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">reset_materials()</code></pre></div>
-<p>However, this operation is a bit sluggish, and it gets worse for larger sets of data.</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="op">%</span>timeit reset_materials()</code></pre></div>
-<pre class="output"><code>1 loop, best of 3: 3.03 s per loop</code></pre>
-<p>MongoDB’s <code>mongoimport</code> command-line imports data provided one-document-per-line, like</p>
-<pre><code>{key1: val1, key2: val2}
-{key1: val3, key2: val4}
-{key1: val5, key3: val5}
-{key2: val7, key5: val8}
-...</code></pre>
-<p>Note that while this is a stream of JSON documents, one per line, it would not make for a valid JSON file – for it to be valid, it would need to have open (<code>[</code>) and closing (<code>]</code>) brackets and have a comma after each document (except the last). Let’s write a file in the proper format:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="cf">with</span> <span class="bu">open</span>(<span class="st">&#39;data/materials.mongoimportable.json&#39;</span>, <span class="st">&#39;w&#39;</span>) <span class="im">as</span> outfile:
-    <span class="cf">with</span> <span class="bu">open</span>(<span class="st">&#39;data/mongo-novice-materials.json&#39;</span>) <span class="im">as</span> infile:
-        docs <span class="op">=</span> json.load(infile)
-        outfile.writelines([json.dumps(doc)<span class="op">+</span><span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span> <span class="cf">for</span> doc <span class="op">in</span> docs])</code></pre></div>
-<p>Now, if you’re on a Unix system (like Linux or Mac OS X), you can execute shell commands from within your Jupyter Notebook by prefacing the line with a <code>!</code>. In any case, the following shell command will import the data to the <code>materials</code> collection on the <code>swc</code> database on the default host and port:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="op">!</span>mongoimport <span class="op">--</span>db swc <span class="op">--</span>collection materials <span class="op">&lt;</span> data<span class="op">/</span>materials.mongoimportable.json</code></pre></div>
-<pre class="output"><code>connected to: 127.0.0.1
-2016-02-25T10:37:14.001-0800            36300   12100/second
-2016-02-25T10:37:15.412-0800 check 9 66140
-2016-02-25T10:37:15.420-0800 imported 66140 objects</code></pre>
+<p>Now, let’s re-import the data to the <code>materials</code> collection on the <code>swc</code> database on the default host and port:</p>
+<pre><code>exit</code></pre>
+<pre class="output"><code>bye</code></pre>
+<pre><code>mongoimport mongo-novice-materials.json --db swc --collection materials --jsonArray</code></pre>
+<pre class="output"><code>connected to: localhost
+imported 66140 objects</code></pre>
+<pre><code>mongo</code></pre>
+<pre class="output"><code>MongoDB shell version: 3.2.3
+connecting to: test</code></pre>
+<pre><code>use swc</code></pre>
+<pre class="output"><code>switched to db swc</code></pre>
 <aside class="callout panel panel-info">
 <div class="panel-heading">
 <h2 id="mongorestore"><span class="glyphicon glyphicon-pushpin"></span>mongorestore</h2>

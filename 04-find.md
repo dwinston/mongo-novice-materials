@@ -23,164 +23,94 @@ The `find()` method returns query results in a cursor, which is an iterable obje
 
 To return all documents in a collection, call the `find()` method without a criteria document.
 
-~~~ {.python}
-cursor = db.materials.find()
+~~~
+db.materials.find()
+~~~
+~~~{.output}
+{ "_id" : ObjectId("5703e9efbd8ea237cdace249"), "spacegroup" : { "source" : "spglib", "crystal_system" : "monoclinic", "hall" : "-P 2yab", "number" : 14, "symbol" : "P2_1/c", "point_group" : "2/m" }, "nelements" : 3, "pretty_formula" : "La2SiO5", "material_id" : "mp-5152", "elasticity" : null, "elements" : [ "La", "O", "Si" ], "chemsys" : "La-O-Si" }
+{ "_id" : ObjectId("5703e9efbd8ea237cdace24a"), "spacegroup" : { "source" : "spglib", "crystal_system" : "cubic", "hall" : "-P 4 2 3", "number" : 221, "symbol" : "Pm-3m", "point_group" : "4/mmm" }, "nelements" : 1, "pretty_formula" : "Fe", "material_id" : "mp-568345", "elasticity" : null, "elements" : [ "Fe" ], "chemsys" : "Fe" }
+...
+Type "it" for more
 ~~~
 
-Let's iterate over the cursor and print a few material ids.
-
-~~~ {.python}
-how_many = 5
-counter = 0
-for document in cursor:
-    if counter < how_many:
-        print(document['material_id'])
-        counter += 1
-    else:
-        break
-~~~
-~~~ {.output}
-mp-568345
-mp-12671
-mp-1703
-mp-5152
-mp-569624
-~~~
-
-There's an easier way to limit how many documents are yielded by a cursor, via method chaining:
-
-~~~ {.python}
-for document in cursor.limit(5):
-    print(document['material_id'])
-~~~
-~~~ {.output}
-mp-31899
-mp-567842
-mp-6574
-mp-6947
-mp-3236
-~~~
+Conveniently, the mongo shell will yield several documents from the cursor for you without trying to dump everything. You can type "it" to **it**erate over more of the results if you want.
 
 ### Query by a top-level field
 
-The following operation finds documents whose **nelements** field equals **3**:
+Our documents have a field indicating the number of chemical elements in the corresponding material. Let's find documents whose **nelements** field equals **3**:
 
-~~~ {.python}
-cursor = db.materials.find({"nelements": 3})
+~~~
+db.materials.find({nelements: 3})
+~~~
+~~~{.output}
+{ "_id" : ObjectId("5703e9efbd8ea237cdace249"), "spacegroup" : { "source" : "spglib", "crystal_system" : "monoclinic", "hall" : "-P 2yab", "number" : 14, "symbol" : "P2_1/c", "point_group" : "2/m" }, "nelements" : 3, "pretty_formula" : "La2SiO5", "material_id" : "mp-5152", "elasticity" : null, "elements" : [ "La", "O", "Si" ], "chemsys" : "La-O-Si" }
+{ "_id" : ObjectId("5703e9efbd8ea237cdace24d"), "spacegroup" : { "source" : "spglib", "crystal_system" : "trigonal", "hall" : "-P 3 2=", "number" : 164, "symbol" : "P-3m1", "point_group" : "-3m" }, "nelements" : 3, "pretty_formula" : "Er2SO2", "material_id" : "mp-12671", "elasticity" : null, "elements" : [ "Er", "O", "S" ], "chemsys" : "Er-O-S" }
+...
+Type "it" for more
 ~~~
 
-Let's print ("pretty print", for nice indentation) a few of the results:
+Note the presence of an **elements** field that lists chemical elements. While we could formulate an equilavent query that derives our query condition as a function of existing document properties, e.g.
 
-~~~ {.python}
-from pprint import pprint
-
-for doc in cursor.limit(3):
-    pprint(doc)
+~~~
+db.materials.find({$where: function() { return this.elements.length === 3; }})
 ~~~
 
-~~~ {.output}
-{'_id': ObjectId('56ce22947943f62692bdada6'),
- 'chemsys': 'Er-O-S',
- 'elasticity': None,
- 'elements': ['Er', 'O', 'S'],
- 'material_id': 'mp-12671',
- 'nelements': 3,
- 'pretty_formula': 'Er2SO2',
- 'spacegroup': {'crystal_system': 'trigonal',
-                'hall': '-P 3 2=',
-                'number': 164,
-                'point_group': '-3m',
-                'source': 'spglib',
-                'symbol': 'P-3m1'}}
-{'_id': ObjectId('56ce22947943f62692bdada8'),
- 'chemsys': 'La-O-Si',
- 'elasticity': None,
- 'elements': ['La', 'O', 'Si'],
- 'material_id': 'mp-5152',
- 'nelements': 3,
- 'pretty_formula': 'La2SiO5',
- 'spacegroup': {'crystal_system': 'monoclinic',
-                'hall': '-P 2yab',
-                'number': 14,
-                'point_group': '2/m',
-                'source': 'spglib',
-                'symbol': 'P2_1/c'}}
-{'_id': ObjectId('56ce22947943f62692bdadab'),
- 'chemsys': 'Cl-Fe-O',
- 'elasticity': {'G_Reuss': 4.800058831100799,
-                'G_VRH': 15.695815587428928,
-                'G_Voigt': 26.591572343757058,
-                'K_Reuss': 12.632559688113227,
-                'K_VRH': 27.637901832532986,
-                'K_Voigt': 42.643243976952746,
-                'calculations': {'energy_cutoff': 700.0,
-                                 'kpoint_density': 7000,
-                                 'pseudopotentials': ['Fe_pv', 'Cl', 'O']},
-                'elastic_anisotropy': 25.074876418379876,
-                'elastic_tensor': [[132.83779269421643,
-                                    4.717792594504168,
-                                    41.313046328714506,
-                                    0.0,
-                                    0.0,
-                                    0.0],
-                                   [4.717792594504168,
-                                    13.477772725303467,
-                                    4.593045165520949,
-                                    0.0,
-                                    0.0,
-                                    0.0],
-                                   [41.313046328714506,
-                                    4.593045165520949,
-                                    136.22586219557556,
-                                    0.0,
-                                    0.0,
-                                    0.0],
-                                   [0.0, 0.0, 0.0, 1.98697116, 0.0, 0.0],
-                                   [0.0, 0.0, 0.0, 0.0, 51.08350865666667, 0.0],
-                                   [0.0,
-                                    0.0,
-                                    0.0,
-                                    0.0,
-                                    0.0,
-                                    2.581534060000001]],
-                'poisson_ratio': 0.26124289904174286},
- 'elements': ['Cl', 'Fe', 'O'],
- 'material_id': 'mp-552787',
- 'nelements': 3,
- 'pretty_formula': 'FeClO',
- 'spacegroup': {'crystal_system': 'orthorhombic',
-                'hall': 'P 2 2ab -1ab',
-                'number': 59,
-                'point_group': 'mmm',
-                'source': 'spglib',
-                'symbol': 'Pmmn'}}
-~~~
+, we instead *denormalize* (a fancy word for "duplicate") our data in a way
+that makes a common query pattern (let's say this query is common) both simple
+to express and efficient to process -- simple properties can be *indexed*,
+whereas a `$where` query, as you might imagine, must evaluate a function on
+every document in a collection. Denormalization can be tricky, i.e. one must
+ensure that "derived" fields are kept up-to-date with their sources of truth
+when the latter are updated, but many feel that the extra bookkeeping is worth
+the benefits to usability and performance.
 
 ### Projection to select fields
 
-That last query returned all fields for each document. We can use a projection, specified as JSON, to indicate which fields we want. The `_id` field is included by default -- we must be explicit if we don't want it returned.
+That last query returned all fields for each document. We can use a projection, specified as JSON, to indicate which fields we want. Let's yield a few material ids.
 
-~~~ {.python}
-cursor = db.materials.find({"nelements": 3},
-                           {"material_id": 1, "pretty_formula": 1, "_id": 0})
-
-for doc in cursor.limit(3):
-    pprint(doc)
+~~~
+db.materials.find({},{material_id: 1})
 ~~~
 ~~~ {.output}
-{'material_id': 'mp-12671', 'pretty_formula': 'Er2SO2'}
-{'material_id': 'mp-5152', 'pretty_formula': 'La2SiO5'}
-{'material_id': 'mp-552787', 'pretty_formula': 'FeClO'}
+{ "_id" : ObjectId("5703e9efbd8ea237cdace249"), "material_id" : "mp-5152" }
+{ "_id" : ObjectId("5703e9efbd8ea237cdace24a"), "material_id" : "mp-568345" }
+{ "_id" : ObjectId("5703e9efbd8ea237cdace24b"), "material_id" : "mp-1703" }
+...
+Type "it" for more
+~~~
+
+The `_id` field is included by default -- we must be explicit if we don't want it returned:
+
+~~~
+db.materials.find({},{_id: 0, material_id: 1})
+~~~
+~~~ {.output}
+{ "material_id" : "mp-5152" }
+{ "material_id" : "mp-568345" }
+{ "material_id" : "mp-1703" }
+...
+Type "it" for more
+~~~
+
+Let's combine what we've learned so far about querying by a top-level and projecting to select fields:
+
+~~~
+db.materials.find({nelements: 3}, {material_id: 1, pretty_formula: 1, _id: 0})
+~~~
+~~~ {.output}
+ "pretty_formula" : "La2SiO5", "material_id" : "mp-5152" }
+{ "pretty_formula" : "Er2SO2", "material_id" : "mp-12671" }
+{ "pretty_formula" : "Fe4O7F", "material_id" : "mp-780541" }
+...
+Type "it" for more
 ~~~
 
 ### Query by a field in an embedded document
 
-To specify a condition on a field within an embedded document, use dot notation. Dot notation requires quotes around the whole dotted field name.
+To specify a condition on a field within an embedded document, use dot notation. Dot notation requires quotes around the whole dotted field name. This time, let's also chain the `count()` method to the cursor to return only a count of the number of documents that match the query filter document:
 
-~~~ {.python}
-cursor = db.materials.find({"spacegroup.crystal_system": "cubic"})
-
-print(cursor.count())
+~~~
+db.materials.find({"spacegroup.crystal_system": "cubic"}).count()
 ~~~
 ~~~ {.output}
 9408
@@ -188,49 +118,60 @@ print(cursor.count())
 
 Projection can take advantage of the same dot notation:
 
-~~~ {.python}
-cursor = db.materials.find({"nelements": 2}, {"spacegroup.crystal_system": 1, "elements": 1, "_id": 0})
-
-for doc in cursor.limit(3):
-    pprint(doc)
+~~~
+db.materials.find({nelements: 2}, {"spacegroup.crystal_system": 1, elements: 1, _id: 0}).limit(3)
 ~~~
 ~~~ {.output}
-{'elements': ['Yb', 'Zn'], 'spacegroup': {'crystal_system': 'cubic'}}
-{'elements': ['Cr', 'Hf'], 'spacegroup': {'crystal_system': 'hexagonal'}}
-{'elements': ['B', 'Lu'], 'spacegroup': {'crystal_system': 'cubic'}}
+{ "spacegroup" : { "crystal_system" : "cubic" }, "elements" : [ "Yb", "Zn" ] }
+{ "spacegroup" : { "crystal_system" : "cubic" }, "elements" : [ "B", "Lu" ] }
+{ "spacegroup" : { "crystal_system" : "orthorhombic" }, "elements" : [ "Se", "U" ] }
 ~~~
+
+We also demonstrated another cursor method, `limit()`, that limits the number of documents yielded by the cursor to a specific number. While this is unnecessary when working in the mongo shell because of the 'Type "it" for more' functionality, `limit()` comes in handy when fetching results programmatically if only a limited number of results are needed by your application.
 
 ### Query by a field in an array
 
-How many materials in our collection contain iron? When a field is an array, testing for membership has the same form as testing for equality:
+How many materials in our collection contain iron ("Fe")? When a MongoDB field is an array, testing for membership has the same form as testing for equality:
 
-~~~ {.python}
-db.materials.find({"elements": "Fe"}).count()
+~~~
+db.materials.find({elements: "Fe"}).count()
 ~~~
 ~~~ {.output}
 5813
 ~~~
 
-If you supply an array as the value under test, we can see that four polymorphs of iron are present in our collection:
+If you supply an array as the value under test, we can see that four forms ("polymorphs") of elemental iron are present in our collection:
 
-~~~ {.python}
-db.materials.find({"elements": ["Fe"]}).count()
+~~~
+db.materials.find({elements: ["Fe"]}).count()
 ~~~
 ~~~ {.output}
 4
 ~~~
 
+It may be more natural for you to express the above condition the following way:
+
+~~~
+db.materials.find({elements: "Fe", nelements: 1}).count()
+~~~
+~~~{.output}
+4
+~~~
+
 > ## Dot Notation and Projections {.challenge}
 >
-> Which query below yields documents containing the crystal system and spacegroup number for all binary compounds?
+> Which query below yields documents containing the crystal system and spacegroup number for all exactly-two-element-containing ("binary") compounds?
 >
-> 1. `db.materials.find({"nelements": 2}, {"spacegroup": {"crystal_system": 1, "number": 1}})`
-> 2. `db.materials.find({"nelements": 2}, {"spacegroup.crystal_system": 1, "spacegroup.number": 1})`
+> A. `db.materials.find({nelements: 2}, {spacegroup: {crystal_system: 1, number: 1}})`
+>
+> B. `db.materials.find({nelements: 2}, {"spacegroup.crystal_system": 1, "spacegroup.number": 1})`
 
 > ## Combining Conditions {.challenge}
 >
-> Which query below returns the number of binary oxides (oxygen-containing, two-element materials) in our collection?
+> Which query below returns the number of oxygen-containing, two-element materials ("binary oxides") in our collection?
 >
-> 1. `db.materials.find({"elements": "O"}).limit(2).count()`
-> 2. `db.materials.find({"elements": "O", "nelements": 2}).count()`
-> 3. `db.materials.find({"elements": ["O"], "nelements": 2}).count()`
+> A. `db.materials.find({elements: "O"}).limit(2).count()`
+>
+> B. `db.materials.find({elements: "O", nelements: 2}).count()`
+>
+> C. `db.materials.find({elements: ["O"], nelements: 2}).count()`

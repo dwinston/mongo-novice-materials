@@ -48,7 +48,7 @@ compounds.
 ## Topics
 
 1.  [Introduction/Setup](01-intro.html)
-2.  [Connect to / Import into a Mock Database](02-mockconn.html)
+2.  [Connect to / Import into a Database](02-connimport.html)
 3.  [Insert Data](03-insert.html)
 4.  [Find Data](04-find.html)
 5.  [Specify Conditions with Operators](05-operators.html)

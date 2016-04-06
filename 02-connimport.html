@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: Using MongoDB</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <link rel="stylesheet" type="text/css" href="css/custom.css" />
+    <link rel="alternate" type="application/rss+xml" title="Software Carpentry Blog" href="http://software-carpentry.org/feed.xml"/>
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://software-carpentry.org" title="Software Carpentry">
+          <img alt="Software Carpentry banner" src="img/software-carpentry-banner.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+                    <a href="index.html"><h1 class="title">Using MongoDB</h1></a>
+          <h2 class="subtitle">Connect to / Import into a Database</h2>
+          <section class="objectives panel panel-warning">
+<div class="panel-heading">
+<h2 id="learning-objectives"><span class="glyphicon glyphicon-certificate"></span>Learning Objectives</h2>
+</div>
+<div class="panel-body">
+<ul>
+<li>Connect using the mongo shell</li>
+<li>Import JSON data from a file</li>
+</ul>
+</div>
+</section>
+<p>First, let’s connect to our server through the <code>mongo</code> shell program:</p>
+<pre><code>mongo</code></pre>
+<pre class="output"><code>MongoDB shell version: 3.2.3
+connecting to: test</code></pre>
+<p>A MongoDB instance can host multiple databases, which are created dynamically. In the shell, you can type <code>show dbs</code> to see what exists already. In general, you can type <code>help</code> to see a list of available commands.</p>
+<p>Let’s tell mongo we want to <code>use swc</code>, i.e. use a database with the name <code>swc</code>. Mongo will create the database for us if it doesn’t exist.</p>
+<pre><code>// Refer to the Software Carpentry (&quot;swc&quot;) database
+use swc</code></pre>
+<pre class="output"><code>switched to db swc</code></pre>
+<p>The mongo shell, in addition to responding to its special command language, is also a JavaScript interpreter. Comment lines in Javascript are preceded with <code>//</code>, so the line before <code>use swc</code> above is a comment.</p>
+<p>A MongoDB database is organized as a set of collections, each of which contains a set of documents. Just as with databases themselves, database collections are created dynamically in MongoDB. Let’s ask for a count of the number of documents in the <code>materials</code> collection of our database:</p>
+<pre><code>db.materials.count()</code></pre>
+<pre class="output"><code>0</code></pre>
+<p>This is to be expected – we have no documents in the (hypothetical) <code>swc</code> database’s (hypothetical) <code>materials</code> collection. Let’s make things more real by importing some data. <code>exit</code> out of the mongo shell and let’s use <code>mongoimport</code> to load some documents into <code>swc.materials</code>:</p>
+<pre><code>exit</code></pre>
+<pre class="output"><code>bye</code></pre>
+<pre><code>mongoimport mongo-novice-materials.json --db swc --collection materials --jsonArray</code></pre>
+<pre class="output"><code>connected to: localhost
+imported 66140 documents</code></pre>
+<p><code>JSON</code>, which stands for “Javascript Object Notation”, is a way to express simple data structures that is widely used in many applications, particularly in web-based applications. We’ll go over the format in the next topic when we construct a document to insert into our collection, but for now let’s focus on importing data that we’re given.</p>
+<p>Now, let’s re-enter the shell and get a count of our collection:</p>
+<pre><code>mongo
+use swc
+db.materials.count()</code></pre>
+<pre class="output"><code>66140</code></pre>
+<p><code>mongoimport</code> is a flexible way to import data into a database collection. If you exit the shell, you can enter <code>mongoimport --help</code> to get a sense of the options available. In particular, importing of data stored in tab-separated-values (TSV) or comma-separated-values (CSV) formats are supported.</p>
+<p><code>mongorestore</code> is a command to restore an entire database (i.e., multiple collections) from a backup. <code>mongodump</code> is a command to “dump” a database for backup.</p>
+<section class="challenge panel panel-success">
+<div class="panel-heading">
+<h2 id="unknown-collections"><span class="glyphicon glyphicon-pencil"></span>Unknown collections</h2>
+</div>
+<div class="panel-body">
+<p>What happens when you run the following?</p>
+<pre><code>db.publications.count()</code></pre>
+<p>A. <code>0</code></p>
+<p>B. <code>Error: no such collection &quot;publications&quot;</code></p>
+<p>C. <code>Error: no method &quot;count&quot; on Undefined</code></p>
+</div>
+</section>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://software-carpentry.org">Software Carpentry</a>
+        <a class="label swc-blue-bg" href="https://github.com/dwinston/mongo-novice-materials">Source</a>
+        <a class="label swc-blue-bg" href="mailto:dwinston@lbl.gov">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="http://software-carpentry.org/v5/js/jquery-1.9.1.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  </body>
+</html>

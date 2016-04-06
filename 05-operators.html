@@ -43,52 +43,39 @@
 <h3 id="operators">Operators</h3>
 <p>MongoDB provides operators to specify query conditions, such as comparison operators. Although there are some exceptions, such as the <code>$or</code> conditional operator, query conditions using operators generally have the following form:</p>
 <pre><code>{ &lt;field1&gt;: { &lt;operator1&gt;: &lt;value1&gt; } }</code></pre>
-<p>Let’s first define a few custom helpers to reduce the boilerplate necessary for our emerging pattern of “testing” a query document by projecting a few fields and printing out a few documents for inspection.</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">COMMON_PROJ <span class="op">=</span> {
-    <span class="st">&quot;material_id&quot;</span>: <span class="dv">1</span>,
-    <span class="co">&quot;pretty_formula&quot;</span>: <span class="dv">1</span>,
-    <span class="co">&quot;_id&quot;</span>: <span class="dv">0</span>,
-}
-
-<span class="kw">def</span> print_a_few_for(query):
-    proj <span class="op">=</span> {k: <span class="dv">1</span> <span class="cf">for</span> k <span class="op">in</span> query}
-    proj.update(COMMON_PROJ)
-    <span class="cf">for</span> doc <span class="op">in</span> db.materials.find(query, proj).limit(<span class="dv">5</span>):
-        pprint(doc)</code></pre></div>
-<p>Note that because MongoDB queries and projections are expressed as JSON, which map to ubiquitous data structures such as Python dictionaries and lists, one can programmatically build cursors without resorting to string manipulation.</p>
-<p>Now, let’s print some materials with at least three elements:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">print_a_few_for({<span class="st">&quot;nelements&quot;</span>: {<span class="st">&quot;$gte&quot;</span>: <span class="dv">3</span>}})</code></pre></div>
-<pre class="output"><code>{&#39;material_id&#39;: &#39;mp-12671&#39;, &#39;nelements&#39;: 3, &#39;pretty_formula&#39;: &#39;Er2SO2&#39;}
-{&#39;material_id&#39;: &#39;mp-5152&#39;, &#39;nelements&#39;: 3, &#39;pretty_formula&#39;: &#39;La2SiO5&#39;}
-{&#39;material_id&#39;: &#39;mp-552787&#39;, &#39;nelements&#39;: 3, &#39;pretty_formula&#39;: &#39;FeClO&#39;}
-{&#39;material_id&#39;: &#39;mp-780541&#39;, &#39;nelements&#39;: 3, &#39;pretty_formula&#39;: &#39;Fe4O7F&#39;}
-{&#39;material_id&#39;: &#39;mp-31899&#39;, &#39;nelements&#39;: 4, &#39;pretty_formula&#39;: &#39;Ba2MnReO6&#39;}</code></pre>
-<p>And some with fewer than 3:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">print_a_few_for({<span class="st">&quot;nelements&quot;</span>: {<span class="st">&quot;$lt&quot;</span>: <span class="dv">3</span>}})</code></pre></div>
-<pre class="output"><code>{&#39;material_id&#39;: &#39;mp-568345&#39;, &#39;nelements&#39;: 1, &#39;pretty_formula&#39;: &#39;Fe&#39;}
-{&#39;material_id&#39;: &#39;mp-1703&#39;, &#39;nelements&#39;: 2, &#39;pretty_formula&#39;: &#39;YbZn&#39;}
-{&#39;material_id&#39;: &#39;mp-569624&#39;, &#39;nelements&#39;: 2, &#39;pretty_formula&#39;: &#39;HfCr2&#39;}
-{&#39;material_id&#39;: &#39;mp-12660&#39;, &#39;nelements&#39;: 2, &#39;pretty_formula&#39;: &#39;LuB6&#39;}
-{&#39;material_id&#39;: &#39;mp-188&#39;, &#39;nelements&#39;: 2, &#39;pretty_formula&#39;: &#39;AlPt3&#39;}</code></pre>
+<p>Let’s first define a custom helper object to reduce the boilerplate necessary for “testing” a query document by projecting a few fields for inspection.</p>
+<pre><code>my_proj = {material_id: 1, pretty_formula: 1, _id: 0}</code></pre>
+<p>Because MongoDB queries and projections are expressed as JSON, one can programmatically build them without resorting to string manipulation.</p>
+<p>Let’s find some materials with at least three elements. At the same time, we’ll demonstrate a simple example of “building” a projection document on-the-fly. In this case, because we’re in the mongo shell, we use the Javascript language. <code>Object.assign</code> takes a “destination” object as its first argument, successively merges the key-value pairs of subsequently provided “source” objects into the destination object (overwriting if necessary), and returns the destination object.</p>
+<pre><code>db.materials.find({nelements: {$gte: 3}}, Object.assign({nelements: 1}, my_proj))</code></pre>
+<pre class="output"><code>{ &quot;nelements&quot; : 3, &quot;pretty_formula&quot; : &quot;La2SiO5&quot;, &quot;material_id&quot; : &quot;mp-5152&quot; }
+{ &quot;nelements&quot; : 3, &quot;pretty_formula&quot; : &quot;Er2SO2&quot;, &quot;material_id&quot; : &quot;mp-12671&quot; }
+{ &quot;nelements&quot; : 3, &quot;pretty_formula&quot; : &quot;Fe4O7F&quot;, &quot;material_id&quot; : &quot;mp-780541&quot; }
+...</code></pre>
+<p>And some with fewer than (“<strong>l</strong>ess <strong>t</strong>han”) 3:</p>
+<pre><code>db.materials.find({nelements: {$lt: 3}}, Object.assign({nelements: 1}, my_proj))</code></pre>
+<pre class="output"><code>{ &quot;nelements&quot; : 1, &quot;pretty_formula&quot; : &quot;Fe&quot;, &quot;material_id&quot; : &quot;mp-568345&quot; }
+{ &quot;nelements&quot; : 2, &quot;pretty_formula&quot; : &quot;YbZn&quot;, &quot;material_id&quot; : &quot;mp-1703&quot; }
+{ &quot;nelements&quot; : 2, &quot;pretty_formula&quot; : &quot;LuB6&quot;, &quot;material_id&quot; : &quot;mp-12660&quot; }
+...</code></pre>
 <h3 id="combining-conditions">Combining Conditions</h3>
 <p>You can specify a logical conjunction (<strong>AND</strong>) for a list of query conditions by separating the conditions with a comma in the conditions document:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">db.materials.find({<span class="st">&quot;chemsys&quot;</span>: <span class="st">&quot;Fe-O&quot;</span>, <span class="st">&quot;spacegroup.crystal_system&quot;</span>: <span class="st">&quot;cubic&quot;</span>}).count()</code></pre></div>
+<pre><code>db.materials.find({chemsys: &quot;Fe-O&quot;, &quot;spacegroup.crystal_system&quot;: &quot;cubic&quot;}).count()</code></pre>
 <pre class="output"><code>7</code></pre>
 <p>You can specify a logical disjunction (<strong>OR</strong>) for a list of query conditions by using the <code>$or</code> query operator.</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">db.materials.find({
-    <span class="st">&quot;$or&quot;</span>: [{<span class="st">&quot;nelements&quot;</span>: <span class="dv">2</span>}, {<span class="st">&quot;nelements&quot;</span>: <span class="dv">4</span>}]
-}).count()</code></pre></div>
+<pre><code>db.materials.find({
+    $or: [{nelements: 2}, {nelements: 4}]
+}).count()</code></pre>
+<pre class="output"><code>27370</code></pre>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
 <h2 id="combining-operators-for-the-same-key"><span class="glyphicon glyphicon-pencil"></span>Combining Operators for the Same Key</h2>
 </div>
 <div class="panel-body">
 <p>Which query document will find compounds that have between 2 and 4 elements, inclusive?</p>
-<ol style="list-style-type: decimal">
-<li><code>{&quot;nelements&quot;: {&quot;$gte&quot;: 2, &quot;$lte&quot;: 4}}</code></li>
-<li><code>{&quot;nelements&quot;: {&quot;$gte&quot;: 2}, &quot;nelements&quot;: {&quot;$lte&quot;: 4}}</code></li>
-<li><code>{&quot;$or&quot;: [{&quot;nelements&quot;: {&quot;$gte&quot;: 2}}, {&quot;nelements&quot;: {&quot;$lte&quot;: 4}}]}</code></li>
-</ol>
+<p>A. <code>{nelements: {$gte: 2, $lte: 4}}</code></p>
+<p>B. <code>{nelements: {$gte: 2}, nelements: {$lte: 4}}</code></p>
+<p>C. <code>{$or: [{nelements: {$gte: 2}}, {nelements: {$lte: 4}}]}</code></p>
 </div>
 </section>
 <section class="challenge panel panel-success">
@@ -97,10 +84,10 @@
 </div>
 <div class="panel-body">
 <p>MongoDB has <a href="https://docs.mongodb.org/manual/reference/operator/query/">lots</a> of query (and projection!) operators. <code>$exists</code> asks whether or not a field is present in a document. For example,</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">print_a_few_for({<span class="st">&quot;elasticity&quot;</span>: {<span class="st">&quot;$exists&quot;</span>: <span class="va">True</span>}})</code></pre></div>
-<p>might print some documents that contain information on a material’s mechanical behavior in the elastic limit.</p>
+<pre><code>db.materials.find({elasticity: {$exists: true}})</code></pre>
+<p>might find documents that contain information on a material’s mechanical behavior in the elastic limit.</p>
 <p>What prints out? What did you expect? What happens when</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">{<span class="st">&quot;elasticity&quot;</span>: {<span class="st">&quot;$ne&quot;</span>: <span class="va">None</span>}}</code></pre></div>
+<pre><code>{elasticity: {$ne: null}}</code></pre>
 <p>is your query document (<code>$ne</code> is the query operator for “not equal”)?</p>
 </div>
 </section>

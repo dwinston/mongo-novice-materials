@@ -42,56 +42,195 @@
 </div>
 </section>
 <p>Indexes can support the efficient execution of queries. MongoDB automatically creates an index on the <code>_id</code> field upon the creation of a collection.</p>
-<p>To create an index on a field or fields, pass to the <code>create_index()</code> method a list of field and index type pairs:</p>
-<pre><code>[ ( &lt;field1&gt;: &lt;type1&gt; ), ... ]</code></pre>
+<p>To create an index for a collection on a field or fields, pass to the <code>createIndex()</code> method a document of field and index-type pairs:</p>
+<pre><code>{ ( &lt;field1&gt;: &lt;type1&gt; ), ... }</code></pre>
 <p>The format is that same as for <code>sort()</code>ing, with <code>1</code> for an ascending index and <code>-1</code> for a descending index.</p>
-<aside class="callout panel panel-info">
-<div class="panel-heading">
-<h2 id="import-this"><span class="glyphicon glyphicon-pushpin"></span>import this</h2>
-</div>
-<div class="panel-body">
-<p><code>pymongo</code> provides the <code>pymongo.ASCENDING</code> and <code>pymongo.DESCENDING</code> constants, which equal 1 and -1 respectively. Explicit is better than implicit, so some prefer using these constants for readability.</p>
-</div>
-</aside>
-<p><code>create_index()</code> only creates an index if the index does not exist.</p>
-<p>Earlier, we ran the <code>distinct</code> aggregation method to get a list of crystal systems. Let’s time this operation:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="op">%%</span>timeit
-
-db.materials.distinct(<span class="st">&quot;spacegroup.crystal_system&quot;</span>)</code></pre></div>
-<pre class="output"><code>10 loops, best of 3: 47.1 ms per loop</code></pre>
-<p>Not bad, but what if our collection was bigger? Right now our collection is ~20 MB, so everything is loaded into RAM. What happens when our collection is tens of GB (or more) and MongoDB needs to fetch documents on disk and swap out from RAM?</p>
-<p>Indexes for databases are like indexes for books – rather than having to scan every page consecutively for what you want, you can flip to the index in back and quickly get a reference to page numbers (or documents) of interest.</p>
+<p><code>createIndex()</code> only creates an index if the index does not exist.</p>
+<p>Let’s examine the running time of a “shortcut” aggregation method, <code>distinct</code>, to get a list of distinct crystal system. First, running the command normally:</p>
+<pre><code>db.materials.distinct(&quot;spacegroup.crystal_system&quot;)</code></pre>
+<pre class="output"><code>[
+    &quot;cubic&quot;,
+    &quot;monoclinic&quot;,
+    &quot;trigonal&quot;,
+    &quot;orthorhombic&quot;,
+    &quot;hexagonal&quot;,
+    &quot;tetragonal&quot;,
+    &quot;triclinic&quot;,
+    null
+]</code></pre>
+<p>We see that some materials have uncertain crystal symmetry (the <code>null</code> value). To get more insight into what’s happening under the hood here, including running time, we can use <code>db.runCommand</code>:</p>
+<pre><code>db.runCommand({distinct: &quot;materials&quot;, key: &quot;spacegroup.crystal_system&quot;})</code></pre>
+<pre class="output"><code>{
+    &quot;waitedMS&quot; : NumberLong(0),
+    &quot;values&quot; : [
+        &quot;cubic&quot;,
+        &quot;monoclinic&quot;,
+        &quot;trigonal&quot;,
+        &quot;orthorhombic&quot;,
+        &quot;hexagonal&quot;,
+        &quot;tetragonal&quot;,
+        &quot;triclinic&quot;,
+        null
+    ],
+    &quot;stats&quot; : {
+        &quot;n&quot; : 66140,
+        &quot;nscanned&quot; : 0,
+        &quot;nscannedObjects&quot; : 66140,
+        &quot;timems&quot; : 32,
+        &quot;planSummary&quot; : &quot;COLLSCAN&quot;
+    },
+    &quot;ok&quot; : 1
+}</code></pre>
+<p>We from <code>stats.timems</code> that the operation took 32 milliseconds. Not bad, but what if our collection was bigger? Right now our collection is ~20 MB, so everything is loaded into RAM. What happens when our collection is tens of GB (or more) and MongoDB needs to fetch documents on disk and swap out from RAM?</p>
+<p>Indexes for databases are like indexes for books – rather than having to scan every page consecutively for what you want (indicated in <code>stats.planSummary</code> above as <code>COLLSCAN</code>, a <strong>coll</strong>ection <strong>scan</strong>), you can flip to the index and quickly get a reference to page numbers (or here, documents) of interest.</p>
 <p>Let’s ensure a single-field index for the aggregation above:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">db.materials.create_index([(<span class="st">&quot;spacegroup.crystal_system&quot;</span>, <span class="dv">1</span>)])</code></pre></div>
-<pre class="output"><code>&#39;spacegroup.crystal_system_1&#39;</code></pre>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">pprint(db.materials.index_information())</code></pre></div>
-<pre class="output"><code>{&#39;_id_&#39;: {&#39;key&#39;: [(&#39;_id&#39;, 1)], &#39;ns&#39;: &#39;swc.materials&#39;, &#39;v&#39;: 1},
- &#39;spacegroup.crystal_system_1&#39;: {&#39;key&#39;: [(&#39;spacegroup.crystal_system&#39;, 1)],
-                                 &#39;ns&#39;: &#39;swc.materials&#39;,
-                                 &#39;v&#39;: 1}}</code></pre>
-<p>And let’s re-time things:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="op">%%</span>timeit
-
-db.materials.distinct(<span class="st">&quot;spacegroup.crystal_system&quot;</span>)</code></pre></div>
-<pre class="output"><code>1000 loops, best of 3: 296 µs per loop</code></pre>
-<p>The method is now 100× faster. Note, however, that there is overhead for indexes. Every time a document is inserted or updated, indexes need to be updated. Thus, indexes in write-heavy contexts, or for small collections, may not result in a net performance boost. However, if you are mostly finding/aggregating and only occasionally inserting/updating for large-sized collections, indexes are a capital idea.</p>
+<pre><code>db.materials.createIndex({&quot;spacegroup.crystal_system&quot;: 1})</code></pre>
+<pre class="output"><code>{
+    &quot;createdCollectionAutomatically&quot; : false,
+    &quot;numIndexesBefore&quot; : 1,
+    &quot;numIndexesAfter&quot; : 2,
+    &quot;ok&quot; : 1
+}</code></pre>
+<pre><code>db.materials.getIndexSpecs()</code></pre>
+<pre class="output"><code>[
+    {
+        &quot;v&quot; : 1,
+        &quot;key&quot; : {
+            &quot;_id&quot; : 1
+        },
+        &quot;name&quot; : &quot;_id_&quot;,
+        &quot;ns&quot; : &quot;swc.materials&quot;
+    },
+    {
+        &quot;v&quot; : 1,
+        &quot;key&quot; : {
+            &quot;spacegroup.crystal_system&quot; : 1
+        },
+        &quot;name&quot; : &quot;spacegroup.crystal_system_1&quot;,
+        &quot;ns&quot; : &quot;swc.materials&quot;
+    }
+]</code></pre>
+<p>And let’s re-run the operation:</p>
+<pre><code>db.runCommand({distinct: &quot;materials&quot;, key: &quot;spacegroup.crystal_system&quot;})</code></pre>
+<pre class="output"><code>{
+    &quot;waitedMS&quot; : NumberLong(0),
+    &quot;values&quot; : [
+        null,
+        &quot;cubic&quot;,
+        &quot;hexagonal&quot;,
+        &quot;monoclinic&quot;,
+        &quot;orthorhombic&quot;,
+        &quot;tetragonal&quot;,
+        &quot;triclinic&quot;,
+        &quot;trigonal&quot;
+    ],
+    &quot;stats&quot; : {
+        &quot;n&quot; : 8,
+        &quot;nscanned&quot; : 8,
+        &quot;nscannedObjects&quot; : 8,
+        &quot;timems&quot; : 0,
+        &quot;planSummary&quot; : &quot;DISTINCT_SCAN { spacegroup.crystal_system: 1.0 }&quot;
+    },
+    &quot;ok&quot; : 1
+}</code></pre>
+<p>The method now takes under 1 millisecond. Woohoo! Note, however, that there is overhead for indexes. Every time a document is inserted or updated, indexes need to be updated. Thus, indexes in write-heavy contexts, or for small collections, may not result in a net performance boost. However, if you are mostly finding/aggregating and only occasionally inserting/updating for large-sized collections, indexes are a capital idea.</p>
 <p>MongoDB supports compound indexes, which are indexes on multiple fields. The order of the fields determine how the index stores its keys.</p>
 <p>Let’s say a common access pattern for our materials collection is to fetch a pretty formula given a material id:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="op">%</span>timeit db.materials.find_one({<span class="st">&quot;material_id&quot;</span>: <span class="st">&quot;mp-49&quot;</span>}, {<span class="st">&quot;pretty_formula&quot;</span>: <span class="dv">1</span>, <span class="st">&quot;_id&quot;</span>: <span class="dv">0</span>})</code></pre></div>
-<pre class="output"><code>100 loops, best of 3: 12.1 ms per loop</code></pre>
-<p>Let’s make a compound index to cover this query:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">db.materials.create_index([(<span class="st">&quot;material_id&quot;</span>, <span class="dv">1</span>), (<span class="st">&quot;pretty_formula&quot;</span>, <span class="dv">1</span>)])</code></pre></div>
-<pre class="output"><code>&#39;material_id_1_pretty_formula_1&#39;</code></pre>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="op">%</span>timeit db.materials.find_one({<span class="st">&quot;material_id&quot;</span>: <span class="st">&quot;mp-49&quot;</span>}, {<span class="st">&quot;pretty_formula&quot;</span>: <span class="dv">1</span>, <span class="st">&quot;_id&quot;</span>: <span class="dv">0</span>})</code></pre></div>
-<pre class="output"><code>1000 loops, best of 3: 187 µs per loop</code></pre>
-<p>For the above query, MongoDB doesn’t actually hit the collection proper because the query is “covered” by the index – it is an index-only query. Even if a query isn’t covered by an index and MongoDB has to load full documents from the collection into working memory, index use is still often much more performant than full collection scans.</p>
-<p>You can specify various properties for indexes, such as a unique constraint and a flag to build the index in the background. In the PyMongo documentation, see <code>create_index()</code> for the available options.</p>
+<pre><code>db.materials.find(
+    {material_id: &quot;mp-49&quot;}, {pretty_formula: 1, _id: 0}
+).explain()</code></pre>
+<pre class="output"><code>{
+    &quot;queryPlanner&quot; : {
+        &quot;plannerVersion&quot; : 1,
+        &quot;namespace&quot; : &quot;swc.materials&quot;,
+        &quot;indexFilterSet&quot; : false,
+        &quot;parsedQuery&quot; : {
+            &quot;material_id&quot; : {
+                &quot;$eq&quot; : &quot;mp-49&quot;
+            }
+        },
+        &quot;winningPlan&quot; : {
+            &quot;stage&quot; : &quot;PROJECTION&quot;,
+            &quot;transformBy&quot; : {
+                &quot;pretty_formula&quot; : 1,
+                &quot;_id&quot; : 0
+            },
+            &quot;inputStage&quot; : {
+                &quot;stage&quot; : &quot;COLLSCAN&quot;,
+                &quot;filter&quot; : {
+                    &quot;material_id&quot; : {
+                        &quot;$eq&quot; : &quot;mp-49&quot;
+                    }
+                },
+                &quot;direction&quot; : &quot;forward&quot;
+            }
+        },
+        &quot;rejectedPlans&quot; : [ ]
+    },
+    ...
+}</code></pre>
+<p>We can use <code>explain()</code> to see how MongoDB planned to execute the query. If this query were running slowly, we could see right away that the <code>COLLSCAN</code> value indicates that no index is being used. Let’s make a compound index to cover this query:</p>
+<pre><code>db.materials.createIndex({material_id: 1, pretty_formula: 1})</code></pre>
+<pre class="output"><code>{
+    &quot;createdCollectionAutomatically&quot; : false,
+    &quot;numIndexesBefore&quot; : 2,
+    &quot;numIndexesAfter&quot; : 3,
+    &quot;ok&quot; : 1
+}</code></pre>
+<pre><code>db.materials.find(
+    {material_id: &quot;mp-49&quot;}, {pretty_formula: 1, _id: 0}
+).explain()</code></pre>
+<pre class="output"><code>{
+    &quot;queryPlanner&quot; : {
+        &quot;plannerVersion&quot; : 1,
+        &quot;namespace&quot; : &quot;swc.materials&quot;,
+        &quot;indexFilterSet&quot; : false,
+        &quot;parsedQuery&quot; : {
+            &quot;material_id&quot; : {
+                &quot;$eq&quot; : &quot;mp-49&quot;
+            }
+        },
+        &quot;winningPlan&quot; : {
+            &quot;stage&quot; : &quot;PROJECTION&quot;,
+            &quot;transformBy&quot; : {
+                &quot;pretty_formula&quot; : 1,
+                &quot;_id&quot; : 0
+            },
+            &quot;inputStage&quot; : {
+                &quot;stage&quot; : &quot;IXSCAN&quot;,
+                &quot;keyPattern&quot; : {
+                    &quot;material_id&quot; : 1,
+                    &quot;pretty_formula&quot; : 1
+                },
+                &quot;indexName&quot; : &quot;material_id_1_pretty_formula_1&quot;,
+                &quot;isMultiKey&quot; : false,
+                &quot;isUnique&quot; : false,
+                &quot;isSparse&quot; : false,
+                &quot;isPartial&quot; : false,
+                &quot;indexVersion&quot; : 1,
+                &quot;direction&quot; : &quot;forward&quot;,
+                &quot;indexBounds&quot; : {
+                    &quot;material_id&quot; : [
+                        &quot;[\&quot;mp-49\&quot;, \&quot;mp-49\&quot;]&quot;
+                    ],
+                    &quot;pretty_formula&quot; : [
+                        &quot;[MinKey, MaxKey]&quot;
+                    ]
+                }
+            }
+        },
+        &quot;rejectedPlans&quot; : [ ]
+    },
+    ...
+}</code></pre>
+<p>For the above query, MongoDB doesn’t actually hit the collection proper because the query is “covered” by the index – it is an index-only query. Try repeating the above find-and-explain operation but without the <code>{_id: 0}</code> in the projection. You’ll see an intermediate <code>FETCH</code> stage between the index scan (<code>IXSCAN</code>) and final projection. Even if a query isn’t covered by an index and MongoDB has to load full documents from the collection into working memory (i.e., “fetch” them), index use is still typically much more performant than full collection scans.</p>
+<p>You can specify various properties for indexes, such as a unique constraint and a flag to build the index in the background. In the MongoDB documentation, see <code>createIndex()</code> for the available options.</p>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
 <h2 id="compound-index-ordering"><span class="glyphicon glyphicon-pencil"></span>Compound Index Ordering</h2>
 </div>
 <div class="panel-body">
-<p>Use <code>drop_index()</code> to drop the <code>[(&quot;material_id&quot;, 1), (&quot;pretty_formula&quot;, 1)]</code> index and re-create it but with the key-direction pairs reversed. Time the benchmark query again. What happens? Why?</p>
+<p>Use <code>dropIndex()</code> to drop the <code>&quot;material_id_1_pretty_formula_1&quot;</code> index and re-create it but with the key-direction pairs reversed. <code>explain</code> the benchmark query again. What happens? Why?</p>
 </div>
 </section>
 <section class="challenge panel panel-success">
